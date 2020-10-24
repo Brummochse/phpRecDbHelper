@@ -12,10 +12,13 @@ public class MainFrame {
         return lblCurrentTime;
     }
 
+    public JLabel getLblMediaInfo() {
+        return lblMediaInfo;
+    }
+
     public JLabel getLblLength() {
         return lblLength;
     }
-
 
     public JTextField getTfPath() {
         return tfPath;
@@ -61,5 +64,6 @@ public class MainFrame {
     private JPanel pnlTimeBar;
     private JLabel lblLength;
     private JLabel lblCurrentTime;
+    private JLabel lblMediaInfo;
     private JButton btnChangeTitle;
 }

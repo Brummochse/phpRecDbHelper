@@ -1,10 +1,14 @@
 package phpRecDB.helper;
 
+
+import com.sun.jna.NativeLibrary;
 import phpRecDB.helper.gui.MainFrame;
 import phpRecDB.helper.gui.VideoFileView;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.MouseDraggedListener;
 import phpRecDB.helper.util.TimeUtil;
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.binding.RuntimeUtil;
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
@@ -18,7 +22,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -38,6 +44,12 @@ public class MainController {
     }
 
     public MainController() {
+        VlcLibLoader vlcLibLoader= new VlcLibLoader();
+        if (!vlcLibLoader.isVlcLibAvailable()) {
+            JOptionPane.showMessageDialog(null,"No suitable VLC installation could be found. Please restart this application.","Error",JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
+
         initView();
     }
 
@@ -119,7 +131,7 @@ public class MainController {
 
             currentPath = MediaUtil.getVlcInputString(currentPath);
             List<TitleDescription> titleDescriptions = MediaUtil.getTitleDescriptions(currentPath);
-            if (titleDescriptions.size()==0) {
+            if (titleDescriptions.size() == 0) {
                 AbstractMediaTitle title = new AbstractMediaTitle();
                 title.setTitleId(-1);
                 title.setMediaPath(currentPath);

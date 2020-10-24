@@ -21,7 +21,7 @@
           <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
             <constraints border-constraint="Center"/>
             <properties>
-              <text value="E:\Videos\Bootlegs\rumpelstilzchen trade metllica\Metallica (2012.06.01) - Live Rock Im Park, Zeppelinfeld, Nuremberg, Germany [By Norbinho]"/>
+              <text value="D:\downloads\jdownloader\Rick and Morty S01E02 German 720p Blu Ray x264 iNTENTiON\Rick and Morty S01E02 German 720p Blu Ray x264 iNTENTiON.mp4"/>
             </properties>
           </component>
         </children>
@@ -96,11 +96,6 @@
               <text value="show info"/>
             </properties>
           </component>
-          <hspacer id="97edc">
-            <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-          </hspacer>
           <vspacer id="efa29">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
@@ -112,6 +107,14 @@
             </constraints>
             <properties>
               <text value="mute"/>
+            </properties>
+          </component>
+          <component id="e69e6" class="javax.swing.JLabel" binding="lblMediaInfo">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Label"/>
             </properties>
           </component>
         </children>
