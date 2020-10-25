@@ -1,5 +1,7 @@
 package phpRecDB.helper.gui;
 
+import phpRecDB.helper.media.data.AbstractMediaTitle;
+
 import javax.swing.*;
 
 public class MainFrame {
@@ -44,16 +46,15 @@ public class MainFrame {
         return btnShowInfo;
     }
 
-    public JList getListTitles() {
+    public JList<AbstractMediaTitle> getListTitles() {
         return listTitles;
     }
-
 
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
     private JButton btnShowInfo;
-    private JList listTitles;
+    private JList<AbstractMediaTitle> listTitles;
     private JPanel pnlVideo;
     private JPanel pnlLoadResource;
     private JButton btnChooseMedia;

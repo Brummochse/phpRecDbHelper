@@ -21,7 +21,7 @@
           <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
             <constraints border-constraint="Center"/>
             <properties>
-              <text value="D:\downloads\jdownloader\Rick and Morty S01E02 German 720p Blu Ray x264 iNTENTiON\Rick and Morty S01E02 German 720p Blu Ray x264 iNTENTiON.mp4"/>
+              <text value="E:\video test\HEAVEN SHALL BURN-2006-DEAF TO OUR PRAYERS DVD\VIDEO_TS"/>
             </properties>
           </component>
         </children>

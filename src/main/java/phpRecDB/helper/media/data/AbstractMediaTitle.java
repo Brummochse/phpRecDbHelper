@@ -1,22 +1,31 @@
-package phpRecDB.helper;
+package phpRecDB.helper.media.data;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 public class AbstractMediaTitle {
 
-    private String mediaPath;
+    private int titleId = -1;
 
-    private int titleId=-1;
-
-    private boolean isMenu=false;
+    private boolean isMenu = false;
 
     private String name;
+
+    private Medium medium;
+
+    private boolean visible = true;
 
 
     @Override
     public String toString() {
-        return new File(mediaPath).getName()+ ' '+titleId;
+        return new File(medium.getPath()).getName() + ' ' + titleId;
+    }
+
+    public Medium getMedium() {
+        return medium;
+    }
+
+    public void setMedium(Medium medium) {
+        this.medium = medium;
     }
 
     public String getName() {
@@ -27,13 +36,6 @@ public class AbstractMediaTitle {
         this.name = name;
     }
 
-    public String getMediaPath() {
-        return mediaPath;
-    }
-
-    public void setMediaPath(String mediaPath) {
-        this.mediaPath = mediaPath;
-    }
 
     public int getTitleId() {
         return titleId;
@@ -49,5 +51,13 @@ public class AbstractMediaTitle {
 
     public void setMenu(boolean menu) {
         isMenu = menu;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

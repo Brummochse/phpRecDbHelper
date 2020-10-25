@@ -1,0 +1,11 @@
+length
+media (audio: CD    video: DVD, DVD-DL, BR)
+count of media
+source (audio : shn, flac, wav   video: TS, VCD, AVI, DV)
+video format (PAL, NTSC, HDTV)
+Aspect-Ratio (4:3, 16:9)
+bitrate
+
+screenshots
+
+filesize

@@ -26,23 +26,6 @@ public class MediaUtil {
         return isVideoDiscFolder(f, "BDMV");
     }
 
-    public static String getVlcInputString(String path) {
-        File file = new File(path);
-        if (file.isDirectory() && MediaUtil.isBRFolder(file)) {
-            return "bluray:///" + path;
-        }
-
-        return path;
-    }
-
-    public static List<TitleDescription> getTitleDescriptions(String path) {
-        MediaPlayerFactory factory = new MediaPlayerFactory();
-        MediaPlayer mediaPlayer = factory.mediaPlayers().newMediaPlayer();
-        mediaPlayer.media().start(path);
-        List<TitleDescription> titleDescriptions = mediaPlayer.titles().titleDescriptions();
-        mediaPlayer.release();
-        return titleDescriptions;
-    }
 
     public static void showMediaInfo(EmbeddedMediaPlayerComponent mpc) {
         MediaPlayer mediaPlayer = mpc.mediaPlayer();

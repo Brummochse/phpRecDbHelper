@@ -1,31 +1,26 @@
 package phpRecDB.helper;
 
 
-import com.sun.jna.NativeLibrary;
 import phpRecDB.helper.gui.MainFrame;
+import phpRecDB.helper.gui.TitleListCellRenderer;
 import phpRecDB.helper.gui.VideoFileView;
+import phpRecDB.helper.media.Parser;
+import phpRecDB.helper.media.data.AbstractMediaTitle;
+import phpRecDB.helper.media.data.Medium;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.MouseDraggedListener;
 import phpRecDB.helper.util.TimeUtil;
-import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.binding.RuntimeUtil;
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.media.AudioTrackInfo;
-import uk.co.caprica.vlcj.media.VideoTrackInfo;
-import uk.co.caprica.vlcj.player.base.ChapterDescription;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
-import uk.co.caprica.vlcj.player.base.TrackDescription;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicListUI;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.Vector;
 
 public class MainController {
@@ -33,14 +28,8 @@ public class MainController {
     private MainFrame mainFrame = new MainFrame();
     private EmbeddedMediaPlayerComponent mpc = null;
 
-
-    //        private String path = "E:\\Videos\\Bootlegs\\ratm 2000 sweden (check if better than my old version)\\Rage Against The Machine - Hultsfred Festival, Sweden 2000.06.17\\VIDEO_TS";
-    private String path = "bluray:///E:/Videos/Bootlegs/rumpelstilzchen trade metllica/Metallica (2012.06.01) - Live Rock Im Park, Zeppelinfeld, Nuremberg, Germany [By Norbinho]/";
-//    String path = "E:\\Videos\\Bootlegs\\ratm 2000 sweden (check if better than my old version)\\Rage Against The Machine - Hultsfred Festival, Sweden 2000.06.17\\VIDEO_TS\\VTS_01_1.VOB";
-
     public static void main(String[] args) {
         MainController mainController = new MainController();
-
     }
 
     public MainController() {
@@ -61,6 +50,11 @@ public class MainController {
         mpc = new EmbeddedMediaPlayerComponent() {
             @Override
             public void mediaPlayerReady(MediaPlayer mediaPlayer) {
+
+                if (!mpc.mediaPlayer().audio().isMute()) {
+                    mpc.mediaPlayer().audio().mute();
+                }
+
                 MediaUtil.showMediaInfo(mpc);
             }
 
@@ -97,6 +91,32 @@ public class MainController {
         frame.setVisible(true);
         frame.setSize(new Dimension(800, 600));
 
+        System.out.println(mainFrame.getListTitles().getUI());
+        mainFrame.getListTitles().setUI(new BasicListUI());
+
+        mainFrame.getListTitles().setCellRenderer(new TitleListCellRenderer());
+
+        mainFrame.getListTitles().addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent event) {
+                JList<AbstractMediaTitle> list =
+                        (JList<AbstractMediaTitle>) event.getSource();
+
+                // Get index of item clicked
+
+                int index = list.locationToIndex(event.getPoint());
+                AbstractMediaTitle item = (AbstractMediaTitle) list.getModel()
+                        .getElementAt(index);
+
+                // Toggle selected state
+
+                item.setVisible(!item.isVisible());
+
+                // Repaint cell
+
+                list.repaint(list.getCellBounds(index, index));
+            }
+        });
+
         mainFrame.getBtnShowInfo().addActionListener(e -> MediaUtil.showMediaInfo(mpc));
         mainFrame.getListTitles().addListSelectionListener(e -> titlesSelectionChanged());
         mainFrame.getBtnMute().addActionListener(e -> mpc.mediaPlayer().audio().mute());
@@ -105,18 +125,9 @@ public class MainController {
         mainFrame.getTfPath().addActionListener(e -> openMedia());
     }
 
-    private void loadTitles() {
-        Vector titles = new Vector();
-        List<TitleDescription> titleDescriptions = mpc.mediaPlayer().titles().titleDescriptions();
-        for (int i = 0; i < titleDescriptions.size(); i++) {
-            AbstractMediaTitle title = new AbstractMediaTitle();
-            title.setTitleId(i);
+    class T extends DefaultListModel {
 
-        }
-
-        mainFrame.getListTitles().setListData(titleDescriptions.toArray());
     }
-
     private void timeBarPositionChanged() {
         if (mainFrame.getSliderTimeBar().getValue() / 100 < 1) {
             mpc.mediaPlayer().controls().setPosition((float) mainFrame.getSliderTimeBar().getValue() / 100);
@@ -124,29 +135,10 @@ public class MainController {
     }
 
     private void openMedia() {
-        Vector titles = new Vector();
 
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
-        for (String currentPath : paths) {
-
-            currentPath = MediaUtil.getVlcInputString(currentPath);
-            List<TitleDescription> titleDescriptions = MediaUtil.getTitleDescriptions(currentPath);
-            if (titleDescriptions.size() == 0) {
-                AbstractMediaTitle title = new AbstractMediaTitle();
-                title.setTitleId(-1);
-                title.setMediaPath(currentPath);
-                titles.add(title);
-            }
-
-
-            for (int i = 0; i < titleDescriptions.size(); i++) {
-                AbstractMediaTitle title = new AbstractMediaTitle();
-                title.setTitleId(i);
-                title.setMediaPath(currentPath);
-                title.setName(titleDescriptions.get(i).name());
-                titles.add(title);
-            }
-        }
+        Parser parser = new Parser();
+        Vector titles = parser.getTitles(paths);
 
 
         mainFrame.getListTitles().setListData(titles);
@@ -154,6 +146,8 @@ public class MainController {
 //        initMPC();
 //        mpc.mediaPlayer().media().start(currentPath);
     }
+
+
 
     private void openMediaChooser() {
         final JFileChooser fc = new JFileChooser();
@@ -179,12 +173,13 @@ public class MainController {
         if (selectedIndex < 0) {
             return;
         }
-        AbstractMediaTitle title = (AbstractMediaTitle) mainFrame.getListTitles().getModel().getElementAt(selectedIndex);
+        AbstractMediaTitle title = mainFrame.getListTitles().getModel().getElementAt(selectedIndex);
         initMPC();
-        mpc.mediaPlayer().media().start(title.getMediaPath());
+        mpc.mediaPlayer().media().start(title.getMedium().getPath());
         if (title.getTitleId() >= 0) {
             mpc.mediaPlayer().titles().setTitle(title.getTitleId());
         }
+
         mainFrame.getPnlVlc().updateUI();
     }
 
