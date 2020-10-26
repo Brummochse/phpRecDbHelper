@@ -1,24 +1,20 @@
 package phpRecDB.helper;
 
 
-import phpRecDB.helper.gui.MainFrame;
-import phpRecDB.helper.gui.TitleListCellRenderer;
-import phpRecDB.helper.gui.VideoFileView;
-import phpRecDB.helper.media.Parser;
-import phpRecDB.helper.media.data.AbstractMediaTitle;
-import phpRecDB.helper.media.data.Medium;
+import phpRecDB.helper.gui.*;
+import phpRecDB.helper.media.MediaPathParser;
+import phpRecDB.helper.media.data.MediaInfo;
+import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.MouseDraggedListener;
+import phpRecDB.helper.util.SingleListSelectionEvent;
 import phpRecDB.helper.util.TimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.TitleDescription;
+import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicListUI;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 import java.util.Vector;
@@ -26,62 +22,29 @@ import java.util.Vector;
 public class MainController {
 
     private MainFrame mainFrame = new MainFrame();
-    private EmbeddedMediaPlayerComponent mpc = null;
+    private MediaTitleTableModel mediaTitleTableModel;
+    private PreviewMediaPlayerController previewMediaPlayerController= new PreviewMediaPlayerController();
 
     public static void main(String[] args) {
         MainController mainController = new MainController();
     }
 
     public MainController() {
-        VlcLibLoader vlcLibLoader= new VlcLibLoader();
+        VlcLibLoader vlcLibLoader = new VlcLibLoader();
         if (!vlcLibLoader.isVlcLibAvailable()) {
-            JOptionPane.showMessageDialog(null,"No suitable VLC installation could be found. Please restart this application.","Error",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No suitable VLC installation could be found. Please restart this application.", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
 
-        initView();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                initView();
+            }
+        });
+
     }
 
-    private void initMPC() {
-        if (mpc != null) {
-            mpc.release();
-            mpc = null;
-        }
-        mpc = new EmbeddedMediaPlayerComponent() {
-            @Override
-            public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-
-                if (!mpc.mediaPlayer().audio().isMute()) {
-                    mpc.mediaPlayer().audio().mute();
-                }
-
-                MediaUtil.showMediaInfo(mpc);
-            }
-
-            @Override
-            public void titleChanged(MediaPlayer mediaPlayer, int newTitle) {
-//                loadTitles();
-            }
-
-            @Override
-            public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
-                mainFrame.getLblCurrentTime().setText(TimeUtil.convertMillisecondsToTimeStr(newTime));
-            }
-
-            @Override
-            public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
-                mainFrame.getSliderTimeBar().setValue(Math.round(newPosition * 100));
-            }
-
-            @Override
-            public void lengthChanged(MediaPlayer mediaPlayer, long newLength) {
-                mainFrame.getLblLength().setText(TimeUtil.convertMillisecondsToTimeStr(newLength));
-            }
-        };
-        mainFrame.getPnlVlc().removeAll();
-        mainFrame.getPnlVlc().add(mpc);
-
-    }
 
     private void initView() {
         JFrame frame = new JFrame("MainFrame");
@@ -91,62 +54,31 @@ public class MainController {
         frame.setVisible(true);
         frame.setSize(new Dimension(800, 600));
 
-        System.out.println(mainFrame.getListTitles().getUI());
-        mainFrame.getListTitles().setUI(new BasicListUI());
+        VlcPlayer.getInstance().setVlcPanel(mainFrame.getPnlVlc());
 
-        mainFrame.getListTitles().setCellRenderer(new TitleListCellRenderer());
+        mediaTitleTableModel = new MediaTitleTableModel();
+        mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
+        mainFrame.getTableMediaTitles().setDefaultRenderer(MediaTitle.class, new MediaTitleCellRenderer());
 
-        mainFrame.getListTitles().addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent event) {
-                JList<AbstractMediaTitle> list =
-                        (JList<AbstractMediaTitle>) event.getSource();
+        mainFrame.getTableMediaTitles().getColumnModel().getColumn(0).setMaxWidth(20);
+        mainFrame.getTableMediaTitles().getColumnModel().getColumn(1).setMaxWidth(20);
+        mainFrame.getTableMediaTitles().setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        mainFrame.getTableMediaTitles().setShowGrid(false);
 
-                // Get index of item clicked
-
-                int index = list.locationToIndex(event.getPoint());
-                AbstractMediaTitle item = (AbstractMediaTitle) list.getModel()
-                        .getElementAt(index);
-
-                // Toggle selected state
-
-                item.setVisible(!item.isVisible());
-
-                // Repaint cell
-
-                list.repaint(list.getCellBounds(index, index));
-            }
-        });
-
-        mainFrame.getBtnShowInfo().addActionListener(e -> MediaUtil.showMediaInfo(mpc));
-        mainFrame.getListTitles().addListSelectionListener(e -> titlesSelectionChanged());
-        mainFrame.getBtnMute().addActionListener(e -> mpc.mediaPlayer().audio().mute());
+        mainFrame.getTableMediaTitles().getSelectionModel().addListSelectionListener((SingleListSelectionEvent) (e) -> titlesSelectionChanged());
         mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooser());
-        mainFrame.getSliderTimeBar().addMouseMotionListener((MouseDraggedListener) (e) -> timeBarPositionChanged());
+        mainFrame.getSliderTimeBar().addMouseMotionListener((MouseDraggedListener) (e) -> previewMediaPlayerController.timeBarPositionChanged());
         mainFrame.getTfPath().addActionListener(e -> openMedia());
     }
 
-    class T extends DefaultListModel {
-
-    }
-    private void timeBarPositionChanged() {
-        if (mainFrame.getSliderTimeBar().getValue() / 100 < 1) {
-            mpc.mediaPlayer().controls().setPosition((float) mainFrame.getSliderTimeBar().getValue() / 100);
-        }
-    }
 
     private void openMedia() {
-
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
-        Parser parser = new Parser();
-        Vector titles = parser.getTitles(paths);
+        MediaPathParser parser = new MediaPathParser();
+        Vector<MediaTitle> titles = parser.getTitles(paths);
 
-
-        mainFrame.getListTitles().setListData(titles);
-
-//        initMPC();
-//        mpc.mediaPlayer().media().start(currentPath);
+        mediaTitleTableModel.setMediaTitles(titles);
     }
-
 
 
     private void openMediaChooser() {
@@ -169,18 +101,58 @@ public class MainController {
     }
 
     private void titlesSelectionChanged() {
-        int selectedIndex = mainFrame.getListTitles().getSelectedIndex();
-        if (selectedIndex < 0) {
+        int selectedRow = mainFrame.getTableMediaTitles().getSelectedRow();
+        if (selectedRow < 0) {
             return;
         }
-        AbstractMediaTitle title = mainFrame.getListTitles().getModel().getElementAt(selectedIndex);
-        initMPC();
-        mpc.mediaPlayer().media().start(title.getMedium().getPath());
+        MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
+
+        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getMediaPlayerAccess();
+        this.previewMediaPlayerController.initPreviewMediaPlayer(mediaPlayer);
+
+        mediaPlayer.media().start(title.getMedium().getPath());
         if (title.getTitleId() >= 0) {
-            mpc.mediaPlayer().titles().setTitle(title.getTitleId());
+            mediaPlayer.titles().setTitle(title.getTitleId());
+        }
+//        mainFrame.getPnlVlc().updateUI();
+    }
+
+    private class PreviewMediaPlayerController {
+
+        private MediaPlayer mediaPlayer=null;
+
+        public void initPreviewMediaPlayer(MediaPlayer mediaPlayer) {
+            this.mediaPlayer=mediaPlayer;
+            mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+                @Override
+                public void mediaPlayerReady(MediaPlayer mediaPlayer) {
+//                if (!mpc.mediaPlayer().audio().isMute()) {
+//                    mpc.mediaPlayer().audio().mute();
+//                }
+                }
+
+                @Override
+                public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                    mainFrame.getLblCurrentTime().setText(TimeUtil.convertMillisecondsToTimeStr(newTime));
+                }
+
+                @Override
+                public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
+                    mainFrame.getSliderTimeBar().setValue(Math.round(newPosition * 100));
+                }
+
+                @Override
+                public void lengthChanged(MediaPlayer mediaPlayer, long newLength) {
+                    mainFrame.getLblLength().setText(TimeUtil.convertMillisecondsToTimeStr(newLength));
+                }
+            });
         }
 
-        mainFrame.getPnlVlc().updateUI();
+        public void timeBarPositionChanged() {
+            if (mediaPlayer!= null && mainFrame.getSliderTimeBar().getValue() / 100 < 1) {
+                mediaPlayer.controls().setPosition((float) mainFrame.getSliderTimeBar().getValue() / 100);
+            }
+        }
     }
 
 }

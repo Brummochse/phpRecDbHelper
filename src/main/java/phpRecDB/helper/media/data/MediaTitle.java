@@ -1,8 +1,10 @@
 package phpRecDB.helper.media.data;
 
+import phpRecDB.helper.util.TimeUtil;
+
 import java.io.File;
 
-public class AbstractMediaTitle {
+public class MediaTitle {
 
     private int titleId = -1;
 
@@ -14,10 +16,20 @@ public class AbstractMediaTitle {
 
     private boolean visible = true;
 
+    private MediaInfo mediaInfo;
 
     @Override
     public String toString() {
-        return new File(medium.getPath()).getName() + ' ' + titleId;
+
+        return new File(medium.getPath()).getName() + ' ' + titleId+ " ";//+ TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength());
+    }
+
+    public MediaInfo getMediaInfo() {
+        return mediaInfo;
+    }
+
+    public void setMediaInfo(MediaInfo mediaInfo) {
+        this.mediaInfo = mediaInfo;
     }
 
     public Medium getMedium() {

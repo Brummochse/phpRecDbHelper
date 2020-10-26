@@ -27,8 +27,7 @@ public class MediaUtil {
     }
 
 
-    public static void showMediaInfo(EmbeddedMediaPlayerComponent mpc) {
-        MediaPlayer mediaPlayer = mpc.mediaPlayer();
+    public static void showMediaInfo( MediaPlayer mediaPlayer) {
         VideoTrackInfo t;
         java.util.List<TrackDescription> videoTracks = mediaPlayer.video().trackDescriptions();
         System.out.println("videos: " + videoTracks.size());

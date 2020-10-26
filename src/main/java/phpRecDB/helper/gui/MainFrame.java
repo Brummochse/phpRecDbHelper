@@ -1,10 +1,12 @@
 package phpRecDB.helper.gui;
 
-import phpRecDB.helper.media.data.AbstractMediaTitle;
-
 import javax.swing.*;
 
 public class MainFrame {
+
+    public JTable getTableMediaTitles() {
+        return tableMediaTitles;
+    }
 
     public JSlider getSliderTimeBar() {
         return sliderTimeBar;
@@ -30,10 +32,6 @@ public class MainFrame {
         return btnChooseMedia;
     }
 
-    public JButton getBtnMute() {
-        return btnMute;
-    }
-
     public JPanel getPnlMain() {
         return pnlMain;
     }
@@ -42,29 +40,19 @@ public class MainFrame {
         return pnlVlc;
     }
 
-    public JButton getBtnShowInfo() {
-        return btnShowInfo;
-    }
-
-    public JList<AbstractMediaTitle> getListTitles() {
-        return listTitles;
-    }
-
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
-    private JButton btnShowInfo;
-    private JList<AbstractMediaTitle> listTitles;
     private JPanel pnlVideo;
     private JPanel pnlLoadResource;
     private JButton btnChooseMedia;
     private JTextField tfPath;
-    private JButton btnMute;
     private JPanel pnlVideoPlayer;
     private JSlider sliderTimeBar;
     private JPanel pnlTimeBar;
     private JLabel lblLength;
     private JLabel lblCurrentTime;
     private JLabel lblMediaInfo;
+    private JTable tableMediaTitles;
     private JButton btnChangeTitle;
 }

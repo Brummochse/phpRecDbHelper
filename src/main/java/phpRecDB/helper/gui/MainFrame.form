@@ -21,7 +21,7 @@
           <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
             <constraints border-constraint="Center"/>
             <properties>
-              <text value="E:\video test\HEAVEN SHALL BURN-2006-DEAF TO OUR PRAYERS DVD\VIDEO_TS"/>
+              <text value="E:\video test\HEAVEN SHALL BURN-2006-DEAF TO OUR PRAYERS DVD"/>
             </properties>
           </component>
         </children>
@@ -31,12 +31,8 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="e4004" class="javax.swing.JList" binding="listTitles">
-            <constraints border-constraint="West"/>
-            <properties/>
-          </component>
           <grid id="2e665" binding="pnlVideoPlayer" layout-manager="BorderLayout" hgap="0" vgap="0">
-            <constraints border-constraint="Center"/>
+            <constraints border-constraint="East"/>
             <properties/>
             <border type="none"/>
             <children>
@@ -80,38 +76,26 @@
               </grid>
             </children>
           </grid>
+          <component id="9b565" class="javax.swing.JTable" binding="tableMediaTitles">
+            <constraints border-constraint="Center"/>
+            <properties/>
+          </component>
         </children>
       </grid>
-      <grid id="e8266" binding="pnlControls" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="e8266" binding="pnlControls" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints border-constraint="South"/>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="9066d" class="javax.swing.JButton" binding="btnShowInfo">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="show info"/>
-            </properties>
-          </component>
           <vspacer id="efa29">
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>
           </vspacer>
-          <component id="ca27b" class="javax.swing.JButton" binding="btnMute">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="mute"/>
-            </properties>
-          </component>
           <component id="e69e6" class="javax.swing.JLabel" binding="lblMediaInfo">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="Label"/>
