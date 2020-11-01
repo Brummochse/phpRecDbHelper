@@ -2,27 +2,28 @@ package phpRecDB.helper;
 
 
 import phpRecDB.helper.gui.*;
+import phpRecDB.helper.lambdaInterface.MouseDraggedListener;
+import phpRecDB.helper.lambdaInterface.SingleListSelectionEvent;
 import phpRecDB.helper.media.MediaPathParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
-import phpRecDB.helper.util.MediaUtil;
-import phpRecDB.helper.util.MouseDraggedListener;
-import phpRecDB.helper.util.SingleListSelectionEvent;
-import phpRecDB.helper.util.TimeUtil;
+import phpRecDB.helper.util.*;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
 
 public class MainController {
 
     private MainFrame mainFrame = new MainFrame();
     private MediaTitleTableModel mediaTitleTableModel;
-    private PreviewMediaPlayerController previewMediaPlayerController= new PreviewMediaPlayerController();
+
+    private PreviewMediaPlayerController previewMediaPlayerController = new PreviewMediaPlayerController();
+    private SnapshotController snapshotController;
 
     public static void main(String[] args) {
 
@@ -66,24 +67,20 @@ public class MainController {
         mainFrame.getTableMediaTitles().setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         mainFrame.getTableMediaTitles().setShowGrid(false);
 
-        mainFrame.getTableMediaTitles().getSelectionModel().addListSelectionListener((SingleListSelectionEvent) (e) -> titlesSelectionChanged());
-        mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooser());
+        mainFrame.getTableMediaTitles().getSelectionModel().addListSelectionListener((SingleListSelectionEvent) (e) -> titlesSelectionChangedAction());
+        mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooserAction());
         mainFrame.getSliderTimeBar().addMouseMotionListener((MouseDraggedListener) (e) -> previewMediaPlayerController.timeBarPositionChanged());
-        mainFrame.getTfPath().addActionListener(e -> openMedia());
+        mainFrame.getTfPath().addActionListener(e -> openMediaAction());
 
-        mainFrame.getBtnSnapshot().addActionListener(e -> snapshot());
+        mainFrame.getBtnSnapshot().addActionListener(e -> snapshotAction());
 
-        mainFrame.getBtnTest().addActionListener(e -> test());
+        snapshotController=new SnapshotController(mainFrame.getListSnapshots());
+        mainFrame.getBtnTest().addActionListener(e -> snapshotController.loadScreenshotThumbnailsAction());
 
     }
 
-    private void test() {
-        System.out.println("test1");
-        MediaUtil.waitForPositionChanged(this.previewMediaPlayerController.mediaPlayer);
-        System.out.println("test2");
-    }
 
-    private void snapshot() {
+    private void snapshotAction() {
 
         int selectedRow = mainFrame.getTableMediaTitles().getSelectedRow();
         if (selectedRow < 0) {
@@ -91,9 +88,9 @@ public class MainController {
         }
         MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
 
-        SnapshotMaker snapshotMaker= new SnapshotMaker();
-        snapshotMaker.snapshot(title,5);
-//        SnapshotMaker.snapshot(this.previewMediaPlayerController.mediaPlayer,10);
+        SnapshotMaker snapshotMaker = new SnapshotMaker();
+        snapshotMaker.snapshot(title, 5);
+        snapshotController.loadScreenshotThumbnailsAction();
     }
 
     private void showMediaInfo() {
@@ -101,7 +98,7 @@ public class MainController {
     }
 
 
-    private void openMedia() {
+    private void openMediaAction() {
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
         MediaPathParser parser = new MediaPathParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
@@ -112,7 +109,7 @@ public class MainController {
     }
 
 
-    private void openMediaChooser() {
+    private void openMediaChooserAction() {
         final JFileChooser fc = new JFileChooser();
         File currentDir = new File(mainFrame.getTfPath().getText());
         if (currentDir.isDirectory()) {
@@ -127,11 +124,11 @@ public class MainController {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String paths = List.of(fc.getSelectedFiles()).stream().map(String::valueOf).reduce((a, b) -> a.concat("|").concat(b)).get();
             mainFrame.getTfPath().setText(paths);
-            openMedia();
+            openMediaAction();
         }
     }
 
-    private void titlesSelectionChanged() {
+    private void titlesSelectionChangedAction() {
         int selectedRow = mainFrame.getTableMediaTitles().getSelectedRow();
         if (selectedRow < 0) {
             return;
@@ -145,16 +142,14 @@ public class MainController {
         if (title.getTitleId() >= 0) {
             mediaPlayer.titles().setTitle(title.getTitleId());
         }
-
-//        mainFrame.getPnlVlc().updateUI();
     }
 
     private class PreviewMediaPlayerController {
 
-        private MediaPlayer mediaPlayer=null;
+        private MediaPlayer mediaPlayer = null;
 
         public void initPreviewMediaPlayer(MediaPlayer mediaPlayer) {
-            this.mediaPlayer=mediaPlayer;
+            this.mediaPlayer = mediaPlayer;
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
@@ -182,7 +177,7 @@ public class MainController {
         }
 
         public void timeBarPositionChanged() {
-            if (mediaPlayer!= null && mainFrame.getSliderTimeBar().getValue() / 100 < 1) {
+            if (mediaPlayer != null && mainFrame.getSliderTimeBar().getValue() / 100 < 1) {
                 mediaPlayer.controls().setPosition((float) mainFrame.getSliderTimeBar().getValue() / 100);
             }
         }

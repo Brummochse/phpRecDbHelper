@@ -1,5 +1,6 @@
 package phpRecDB.helper.media;
 
+import phpRecDB.helper.Constants;
 import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.gui.ProgressBarDialog;
 import phpRecDB.helper.media.data.MediaTitle;
@@ -12,6 +13,10 @@ import java.io.File;
 public class SnapshotMaker {
 
     private static File snapshotFolder;
+
+    public static File getSnapshotFolder() {
+        return snapshotFolder;
+    }
 
     private static File ensureExistingSnapshotFolder() {
         //       System.getProperty("user.home");
@@ -48,7 +53,7 @@ public class SnapshotMaker {
                 do {
                     long randomTime = (long) (Math.random() * length);
                     mediaPlayer.controls().setTime(randomTime);
-                    MediaUtil.playVideoAndWait(mediaPlayer,2000);
+                    MediaUtil.playVideoAndWait(mediaPlayer, Constants.snapshotAfterSkipDelay);
                     String snapshotFileName = getFileName(title, mediaPlayer.status().time());
                     File file = new File(snapshotFolder, snapshotFileName);
                     mediaPlayer.snapshots().save(file);

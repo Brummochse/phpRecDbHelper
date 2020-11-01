@@ -1,4 +1,4 @@
-package phpRecDB.helper.util;
+package phpRecDB.helper.lambdaInterface;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;

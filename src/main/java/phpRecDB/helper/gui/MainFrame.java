@@ -48,6 +48,18 @@ public class MainFrame {
         return btnTest;
     }
 
+    public JPanel getPnlSnapshots() {
+        return pnlSnapshots;
+    }
+
+    public JScrollPane getScrollbarSnapshots() {
+        return scrollbarSnapshots;
+    }
+
+    public JList getListSnapshots() {
+        return listSnapshots;
+    }
+
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
@@ -64,7 +76,9 @@ public class MainFrame {
     private JTable tableMediaTitles;
     private JButton btnSnapshot;
     private JButton btnTest;
-    private JButton btnChangeTitle;
+    private JScrollPane scrollbarSnapshots;
+    private JPanel pnlSnapshots;
+    private JList listSnapshots;
 
 
 }
