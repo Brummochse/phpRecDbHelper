@@ -5,6 +5,7 @@ import phpRecDB.helper.util.ResourceUtil;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.io.File;
 import java.util.Vector;
 
 public class MediaTitleTableModel extends AbstractTableModel {

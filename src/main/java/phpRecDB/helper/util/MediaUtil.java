@@ -1,16 +1,12 @@
 package phpRecDB.helper.util;
 
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
 import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
-import uk.co.caprica.vlcj.player.base.ChapterDescription;
-import uk.co.caprica.vlcj.player.base.MediaPlayer;
-import uk.co.caprica.vlcj.player.base.TitleDescription;
-import uk.co.caprica.vlcj.player.base.TrackDescription;
-import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.player.base.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class MediaUtil {
 
@@ -55,5 +51,134 @@ public class MediaUtil {
         }
         long length = mediaPlayer.status().length() / 1000 / 60;
         System.out.println(length);
+    }
+
+
+
+    public static void playVideoAndWait(MediaPlayer mediaPlayer, long milliseconds) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Waiter waiter = new Waiter( mediaPlayer,milliseconds,latch);
+        try {
+            waiter.start();
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static class Waiter extends Thread {
+
+        private final MediaPlayer mediaPlayer;
+        private final CountDownLatch latch;
+        private final long millisecondsToWait;
+        private final TimeChangedListener timeChangedListener = new TimeChangedListener();
+        private long startTime=0;
+
+        private int positionChangedCounter=0;
+
+        public Waiter(MediaPlayer mediaPlayer, long millisecondsToWait, CountDownLatch latch) {
+            this.mediaPlayer = mediaPlayer;
+            this.latch=latch;
+            this.millisecondsToWait =millisecondsToWait;
+        }
+
+        @Override
+        public void run() {
+            mediaPlayer.events().addMediaPlayerEventListener(timeChangedListener);
+            startTime=  mediaPlayer.status().time();
+        }
+
+        private class TimeChangedListener extends MediaPlayerEventAdapter {
+
+            @Override
+            public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+               if (newTime-millisecondsToWait > startTime) {
+                   dispose();
+               }
+            }
+
+            @Override
+            public void finished(MediaPlayer mediaPlayer) {
+                dispose();
+            }
+
+        }
+
+        public void dispose() {
+            mediaPlayer.events().removeMediaPlayerEventListener(timeChangedListener);
+            latch.countDown();
+        }
+
+        ;
+    }
+
+
+
+
+    public static void waitForPositionChanged(MediaPlayer mediaPlayer) {
+        waitForPositionChanged(mediaPlayer,1);
+    }
+
+    public static void waitForPositionChanged(MediaPlayer mediaPlayer, int times) {
+        CountDownLatch latch = new CountDownLatch(1);
+        MediaPlayerThread mediaPlayerThread = new MediaPlayerThread( mediaPlayer,times, latch);
+        try {
+            mediaPlayerThread.start();
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private static class MediaPlayerThread extends Thread {
+
+        private final MediaPlayer mediaPlayer;
+        private final CountDownLatch latch;
+        private final int positionChangedMax;
+        private final VideoOutputListener videoOutputListener= new VideoOutputListener();
+
+        private int positionChangedCounter=0;
+
+        public MediaPlayerThread(MediaPlayer mediaPlayer, int positionChangedMax, CountDownLatch latch) {
+            this.mediaPlayer = mediaPlayer;
+            this.latch=latch;
+            this.positionChangedMax=positionChangedMax;
+        }
+
+        @Override
+        public void run() {
+            mediaPlayer.events().addMediaPlayerEventListener(videoOutputListener);
+        }
+
+        private class VideoOutputListener extends MediaPlayerEventAdapter {
+
+
+            @Override
+            public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                positionChangedEvent();
+            }
+
+            @Override
+            public void finished(MediaPlayer mediaPlayer) {
+                positionChangedEvent();
+            }
+
+        }
+
+        public void positionChangedEvent() {
+            positionChangedCounter++;
+//            System.out.println("positionChangedCounter: "+ positionChangedCounter);
+            if (positionChangedCounter>=positionChangedMax) {
+                dispose();
+            }
+        }
+
+        public void dispose() {
+            mediaPlayer.events().removeMediaPlayerEventListener(videoOutputListener);
+            latch.countDown();
+        }
+
+        ;
     }
 }

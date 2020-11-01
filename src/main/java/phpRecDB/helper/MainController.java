@@ -3,7 +3,7 @@ package phpRecDB.helper;
 
 import phpRecDB.helper.gui.*;
 import phpRecDB.helper.media.MediaPathParser;
-import phpRecDB.helper.media.data.MediaInfo;
+import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.MouseDraggedListener;
@@ -11,7 +11,6 @@ import phpRecDB.helper.util.SingleListSelectionEvent;
 import phpRecDB.helper.util.TimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
-import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +25,9 @@ public class MainController {
     private PreviewMediaPlayerController previewMediaPlayerController= new PreviewMediaPlayerController();
 
     public static void main(String[] args) {
+
         MainController mainController = new MainController();
+
     }
 
     public MainController() {
@@ -69,6 +70,34 @@ public class MainController {
         mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooser());
         mainFrame.getSliderTimeBar().addMouseMotionListener((MouseDraggedListener) (e) -> previewMediaPlayerController.timeBarPositionChanged());
         mainFrame.getTfPath().addActionListener(e -> openMedia());
+
+        mainFrame.getBtnSnapshot().addActionListener(e -> snapshot());
+
+        mainFrame.getBtnTest().addActionListener(e -> test());
+
+    }
+
+    private void test() {
+        System.out.println("test1");
+        MediaUtil.waitForPositionChanged(this.previewMediaPlayerController.mediaPlayer);
+        System.out.println("test2");
+    }
+
+    private void snapshot() {
+
+        int selectedRow = mainFrame.getTableMediaTitles().getSelectedRow();
+        if (selectedRow < 0) {
+            return;
+        }
+        MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
+
+        SnapshotMaker snapshotMaker= new SnapshotMaker();
+        snapshotMaker.snapshot(title,5);
+//        SnapshotMaker.snapshot(this.previewMediaPlayerController.mediaPlayer,10);
+    }
+
+    private void showMediaInfo() {
+        MediaUtil.showMediaInfo(this.previewMediaPlayerController.mediaPlayer);
     }
 
 
@@ -78,6 +107,8 @@ public class MainController {
         Vector<MediaTitle> titles = parser.getTitles(paths);
 
         mediaTitleTableModel.setMediaTitles(titles);
+
+        SnapshotMaker.createNewSnapshotFolder();
     }
 
 
@@ -106,14 +137,15 @@ public class MainController {
             return;
         }
         MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
-
-        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getMediaPlayerAccess();
+        mainFrame.getLblMediaInfo().setText(title.getMediaInfo().getSummary());
+        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
         this.previewMediaPlayerController.initPreviewMediaPlayer(mediaPlayer);
 
         mediaPlayer.media().start(title.getMedium().getPath());
         if (title.getTitleId() >= 0) {
             mediaPlayer.titles().setTitle(title.getTitleId());
         }
+
 //        mainFrame.getPnlVlc().updateUI();
     }
 
@@ -129,6 +161,7 @@ public class MainController {
 //                if (!mpc.mediaPlayer().audio().isMute()) {
 //                    mpc.mediaPlayer().audio().mute();
 //                }
+                    MediaUtil.showMediaInfo(mediaPlayer);
                 }
 
                 @Override

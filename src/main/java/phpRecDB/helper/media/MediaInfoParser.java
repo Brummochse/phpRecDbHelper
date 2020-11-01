@@ -4,13 +4,9 @@ import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.MediaUtil;
-import uk.co.caprica.vlcj.factory.MediaPlayerFactory;
-import uk.co.caprica.vlcj.media.AudioTrackInfo;
-import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class MediaInfoParser {
@@ -20,7 +16,7 @@ public class MediaInfoParser {
     public MediaInfo parseMediaInfo(MediaTitle mediaTitle) {
         latch = new CountDownLatch(1);
 
-        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getMediaPlayerAccess();
+        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
         MediaPlayerThread mediaPlayerThread = new MediaPlayerThread(mediaTitle, mediaPlayer);
         try {
             mediaPlayerThread.start();
@@ -55,14 +51,52 @@ public class MediaInfoParser {
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-                    readMediaInfo();
-
+                    if (isMediaInfoReady())
+                    {
+                        System.out.println("mediaPlayerReady");
+                        MediaUtil.showMediaInfo(mediaPlayer);
+                        readMediaInfo();
+                    }
                 }
 
                 @Override
-                public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
-                    readMediaInfo();
+                public void playing(MediaPlayer mediaPlayer) {
+                    if (isMediaInfoReady())
+                    {
+                        System.out.println("playing");
+                        MediaUtil.showMediaInfo(mediaPlayer);
+                        readMediaInfo();
+                    }
                 }
+
+                @Override
+                public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
+                    if (isMediaInfoReady())
+                    {
+                        System.out.println("positionChanged");
+                        MediaUtil.showMediaInfo(mediaPlayer);
+                        readMediaInfo();
+                    }
+                }
+                                @Override
+                public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
+                    if (isMediaInfoReady())
+                    {
+                        System.out.println("videoOutput");
+                        MediaUtil.showMediaInfo(mediaPlayer);
+                        readMediaInfo();
+                    }
+                }
+
+                private boolean isMediaInfoReady() {
+                    if (mediaPlayer.media().info().videoTracks().size()==1) {
+                        if (mediaPlayer.media().info().videoTracks().get(0).width()>0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
             });
             mediaPlayer.media().start(mediaTitle.getMedium().getPath());
             if (mediaTitle.getTitleId() >= 0) {
@@ -75,6 +109,7 @@ public class MediaInfoParser {
             mediaInfoReturnValue.setVideoTrackInfos(mediaPlayer.media().info().videoTracks());
             mediaInfoReturnValue.setAudioTrackInfos(mediaPlayer.media().info().audioTracks());
             mediaInfoReturnValue.setLength(mediaPlayer.status().length());
+            mediaInfoReturnValue.setAspectRatio(mediaPlayer.video().aspectRatio());
             latch.countDown();
         }
     }

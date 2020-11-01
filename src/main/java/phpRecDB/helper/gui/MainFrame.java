@@ -40,6 +40,14 @@ public class MainFrame {
         return pnlVlc;
     }
 
+    public JButton getBtnSnapshot() {
+        return btnSnapshot;
+    }
+
+    public JButton getBtnTest() {
+        return btnTest;
+    }
+
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
@@ -54,5 +62,9 @@ public class MainFrame {
     private JLabel lblCurrentTime;
     private JLabel lblMediaInfo;
     private JTable tableMediaTitles;
+    private JButton btnSnapshot;
+    private JButton btnTest;
     private JButton btnChangeTitle;
+
+
 }

@@ -30,7 +30,7 @@ public class VlcPlayer {
         this.vlcPanel = vlcPanel;
     }
 
-    public MediaPlayer getMediaPlayerAccess() {
+    public MediaPlayer getNewMediaPlayerAccess() {
         initMPC();
         return mpc.mediaPlayer();
     }

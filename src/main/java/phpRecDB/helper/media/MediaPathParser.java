@@ -2,6 +2,7 @@ package phpRecDB.helper.media;
 
 import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.gui.ProgressBarDialog;
+import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.Medium;
 import phpRecDB.helper.util.MediaUtil;
@@ -9,6 +10,7 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -69,6 +71,7 @@ public class MediaPathParser {
                 Medium medium = new Medium();
                 medium.setPath(currentPath);
                 List<TitleDescription> titleDescriptions = getTitleDescriptions(currentPath);
+
                 if (titleDescriptions.size() == 0) {
                     MediaTitle title = new MediaTitle();
                     title.setTitleId(-1);
@@ -78,17 +81,27 @@ public class MediaPathParser {
                     int progress = (int) ((1. + j) / paths.length * 100);
                     e.updateValue(progress);
                 }
-
+                List<MediaTitle> titlesToParseMediaInfo = new ArrayList<>();
                 for (int i = 0; i < titleDescriptions.size(); i++) {
                     TitleDescription titleDescription = titleDescriptions.get(i);
-                    MediaTitle title = new MediaTitle();
-                    title.setMenu(titleDescription.isMenu());
-                    title.setTitleId(i);
-                    title.setMedium(medium);
-                    title.setName(titleDescription.name());
-                    title.setMediaInfo(mediaInfoParser.parseMediaInfo(title));
-                    titles.add(title);
-                    int progress = (int) (((1. + i) / titleDescriptions.size() + j) * (100 / paths.length));
+                    MediaTitle mediaTitle = new MediaTitle();
+                    mediaTitle.setMenu(titleDescription.isMenu());
+                    mediaTitle.setTitleId(i);
+                    mediaTitle.setMedium(medium);
+                    mediaTitle.setName(titleDescription.name());
+                    if (!titleDescription.isMenu()) {
+                        // in tests some (blu ray) menus caused problems
+                        // for this reason only no-menu titles are remembered for further media info analysis
+                        titlesToParseMediaInfo.add(mediaTitle);
+                    } else {
+                        mediaTitle.setMediaInfo(new MediaInfo());
+                    }
+                    titles.add(mediaTitle);
+                }
+                for (int i = 0; i < titlesToParseMediaInfo.size(); i++) {
+                    MediaTitle mediaTitle = titlesToParseMediaInfo.get(i);
+                    mediaTitle.setMediaInfo(mediaInfoParser.parseMediaInfo(mediaTitle));
+                    int progress = (int) (((1. + i) / titlesToParseMediaInfo.size() + j) * (100 / paths.length));
                     e.updateValue(progress);
                 }
             }
@@ -107,7 +120,7 @@ public class MediaPathParser {
     }
 
     private List<TitleDescription> getTitleDescriptions(String path) {
-        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getMediaPlayerAccess();
+        MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
         mediaPlayer.media().start(path);
         List<TitleDescription> titleDescriptions = mediaPlayer.titles().titleDescriptions();
         VlcPlayer.getInstance().release();

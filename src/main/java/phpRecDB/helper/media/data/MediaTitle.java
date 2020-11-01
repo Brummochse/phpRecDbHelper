@@ -21,7 +21,7 @@ public class MediaTitle {
     @Override
     public String toString() {
 
-        return new File(medium.getPath()).getName() + ' ' + titleId+ " ";//+ TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength());
+        return new File(medium.getPath()).getName() + ' ' + titleId;//+ TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength());
     }
 
     public MediaInfo getMediaInfo() {
