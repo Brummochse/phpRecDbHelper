@@ -25,7 +25,6 @@ public class SnapshotController {
     private DefaultListModel<SnapshotThumbnail> snapshotThumbnailListModel = new DefaultListModel<>();
     private JList<SnapshotThumbnail> snapshotThumbnailList;
 
-
     public SnapshotController(JList<SnapshotThumbnail> snapshotThumbnailList) {
         this.snapshotThumbnailList = snapshotThumbnailList;
         initView();
@@ -68,7 +67,7 @@ public class SnapshotController {
         }
     }
 
-    public void loadScreenshotThumbnailsAction() {
+    public void loadSnapshotThumbnailsAction() {
         loadFromFolder(SnapshotMaker.getSnapshotFolder());
     }
 

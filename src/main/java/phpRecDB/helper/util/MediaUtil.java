@@ -22,7 +22,6 @@ public class MediaUtil {
         return isVideoDiscFolder(f, "BDMV");
     }
 
-
     public static void showMediaInfo( MediaPlayer mediaPlayer) {
         VideoTrackInfo t;
         java.util.List<TrackDescription> videoTracks = mediaPlayer.video().trackDescriptions();
@@ -56,6 +55,9 @@ public class MediaUtil {
 
 
     public static void playVideoAndWait(MediaPlayer mediaPlayer, long milliseconds) {
+        if (milliseconds==0) {
+            return;
+        }
         CountDownLatch latch = new CountDownLatch(1);
         Waiter waiter = new Waiter( mediaPlayer,milliseconds,latch);
         try {

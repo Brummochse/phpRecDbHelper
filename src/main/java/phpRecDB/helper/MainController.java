@@ -74,23 +74,39 @@ public class MainController {
 
         mainFrame.getBtnSnapshot().addActionListener(e -> snapshotAction());
 
-        snapshotController=new SnapshotController(mainFrame.getListSnapshots());
-        mainFrame.getBtnTest().addActionListener(e -> snapshotController.loadScreenshotThumbnailsAction());
+        snapshotController = new SnapshotController(mainFrame.getListSnapshots());
+        mainFrame.getBtnTest().addActionListener(e -> snapshotController.loadSnapshotThumbnailsAction());
 
     }
 
 
     private void snapshotAction() {
 
-        int selectedRow = mainFrame.getTableMediaTitles().getSelectedRow();
-        if (selectedRow < 0) {
+        List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
+        if (selectedMediaTitles.size() == 0) {
+            JOptionPane.showMessageDialog(null, "No video titles selected.");
             return;
         }
-        MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
+
+        SnapshotOptionDialog dialog = new SnapshotOptionDialog();
+        if (selectedMediaTitles.stream().filter(e -> !e.isMenu()).count() > 0) { //contains non-menu videotitles, show options
+            int result = JOptionPane.showConfirmDialog(null, dialog.getPnlContent(),
+                    "Snapshot Options", JOptionPane.OK_CANCEL_OPTION);
+            if (result != JOptionPane.OK_OPTION) {
+                return;
+            }
+        }
 
         SnapshotMaker snapshotMaker = new SnapshotMaker();
-        snapshotMaker.snapshot(title, 5);
-        snapshotController.loadScreenshotThumbnailsAction();
+        for (MediaTitle mediaTitle : selectedMediaTitles) {
+           if (mediaTitle.isMenu()) {
+               snapshotMaker.snapshot(mediaTitle, 1, 0);
+           } else {
+               snapshotMaker.snapshot(mediaTitle, dialog.getCount(), dialog.getDelay());
+           }
+        }
+        snapshotController.loadSnapshotThumbnailsAction();
+
     }
 
     private void showMediaInfo() {

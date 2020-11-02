@@ -1,7 +1,5 @@
 package phpRecDB.helper.media.data;
 
-import phpRecDB.helper.util.TimeUtil;
-
 import java.io.File;
 
 public class MediaTitle {
@@ -14,7 +12,7 @@ public class MediaTitle {
 
     private Medium medium;
 
-    private boolean visible = true;
+    private boolean selected = true;
 
     private MediaInfo mediaInfo;
 
@@ -65,11 +63,11 @@ public class MediaTitle {
         isMenu = menu;
     }
 
-    public boolean isVisible() {
-        return visible;
+    public boolean isSelected() {
+        return selected;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

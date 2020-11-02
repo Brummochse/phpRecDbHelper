@@ -12,7 +12,7 @@ public class MediaTitleCellRenderer extends DefaultTableCellRenderer {
         Component c = super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,column);
         if (value instanceof MediaTitle) {
             MediaTitle mediaTitle=(MediaTitle)value;
-            if (!mediaTitle.isVisible()) {
+            if (!mediaTitle.isSelected()) {
                 c.setForeground(Color.LIGHT_GRAY);
             } else {
                 c.setForeground(Color.BLACK);

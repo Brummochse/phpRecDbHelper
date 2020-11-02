@@ -38,7 +38,7 @@ public class SnapshotMaker {
         SnapshotMaker.snapshotFolder=newSnapshotFolder;
     }
 
-    public void snapshot(MediaTitle title, int count) {
+    public void snapshot(MediaTitle title, int count, long snapshotAfterSkipDelay) {
         new ProgressBarDialog((e) -> {
             MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
             mediaPlayer.media().start(title.getMedium().getPath());
@@ -53,7 +53,7 @@ public class SnapshotMaker {
                 do {
                     long randomTime = (long) (Math.random() * length);
                     mediaPlayer.controls().setTime(randomTime);
-                    MediaUtil.playVideoAndWait(mediaPlayer, Constants.snapshotAfterSkipDelay);
+                    MediaUtil.playVideoAndWait(mediaPlayer, snapshotAfterSkipDelay);
                     String snapshotFileName = getFileName(title, mediaPlayer.status().time());
                     File file = new File(snapshotFolder, snapshotFileName);
                     mediaPlayer.snapshots().save(file);
