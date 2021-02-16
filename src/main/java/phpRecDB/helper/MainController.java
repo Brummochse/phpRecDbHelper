@@ -7,15 +7,18 @@ import phpRecDB.helper.lambdaInterface.SingleListSelectionEvent;
 import phpRecDB.helper.media.MediaPathParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
-import phpRecDB.helper.util.*;
+import phpRecDB.helper.media.data.MediaTitlesSummarization;
+import phpRecDB.helper.util.MediaUtil;
+import phpRecDB.helper.util.TimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.*;
 import java.util.List;
+import java.util.Vector;
+
 
 public class MainController {
 
@@ -38,13 +41,7 @@ public class MainController {
             System.exit(1);
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                initView();
-            }
-        });
-
+        SwingUtilities.invokeLater(this::initView);
     }
 
 
@@ -57,10 +54,12 @@ public class MainController {
         frame.setSize(new Dimension(800, 600));
 
         VlcPlayer.getInstance().setVlcPanel(mainFrame.getPnlVlc());
+        mainFrame.resetUi();
 
         mediaTitleTableModel = new MediaTitleTableModel();
         mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
         mainFrame.getTableMediaTitles().setDefaultRenderer(MediaTitle.class, new MediaTitleCellRenderer());
+        mainFrame.getTableMediaTitles().addPropertyChangeListener(e->updateMediaTitlesSummary());
 
         mainFrame.getTableMediaTitles().getColumnModel().getColumn(0).setMaxWidth(20);
         mainFrame.getTableMediaTitles().getColumnModel().getColumn(1).setMaxWidth(20);
@@ -75,13 +74,16 @@ public class MainController {
         mainFrame.getBtnSnapshot().addActionListener(e -> snapshotAction());
 
         snapshotController = new SnapshotController(mainFrame.getListSnapshots());
-        mainFrame.getBtnTest().addActionListener(e -> snapshotController.loadSnapshotThumbnailsAction());
 
+        mainFrame.getBtnTest().addActionListener(e -> updateMediaTitlesSummary());
     }
 
+    private void updateMediaTitlesSummary() {
+        MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
+        mainFrame.getLblMediaInfo().setText(mediaTitlesSummarization.createSummary());
+    }
 
     private void snapshotAction() {
-
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
         if (selectedMediaTitles.size() == 0) {
             JOptionPane.showMessageDialog(null, "No video titles selected.");
@@ -109,17 +111,32 @@ public class MainController {
 
     }
 
+
     private void showMediaInfo() {
         MediaUtil.showMediaInfo(this.previewMediaPlayerController.mediaPlayer);
     }
 
+    private void webTest() {
+        //            Connector connector = new Connector();
+    //            SnapshotMaker.createNewSnapshotFolder();
+    //            snapshotController.loadSnapshotThumbnailsAction();
+    ////            connector.get();
+    ////            connector.create();
+    //            connector.update(snapshotController.getSnapshots());
+    }
 
     private void openMediaAction() {
+
+        mainFrame.resetUi();
+
+
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
         MediaPathParser parser = new MediaPathParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
 
         mediaTitleTableModel.setMediaTitles(titles);
+
+        updateMediaTitlesSummary();
 
         SnapshotMaker.createNewSnapshotFolder();
     }
@@ -150,11 +167,11 @@ public class MainController {
             return;
         }
         MediaTitle title = mediaTitleTableModel.getMediaTitles().get(selectedRow);
-        mainFrame.getLblMediaInfo().setText(title.getMediaInfo().getSummary());
+        mainFrame.getLblMediaTitleInfo().setText(title.getMediaInfo().getSummary());
         MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
         this.previewMediaPlayerController.initPreviewMediaPlayer(mediaPlayer);
 
-        mediaPlayer.media().start(title.getMedium().getPath());
+        mediaPlayer.media().start(title.getMedium().getVlcInputString());
         if (title.getTitleId() >= 0) {
             mediaPlayer.titles().setTitle(title.getTitleId());
         }
@@ -169,9 +186,9 @@ public class MainController {
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-//                if (!mpc.mediaPlayer().audio().isMute()) {
-//                    mpc.mediaPlayer().audio().mute();
-//                }
+                if (!mediaPlayer.audio().isMute()) {
+                    mediaPlayer.audio().mute();
+                }
                     MediaUtil.showMediaInfo(mediaPlayer);
                 }
 

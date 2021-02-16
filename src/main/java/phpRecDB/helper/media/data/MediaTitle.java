@@ -64,7 +64,7 @@ public class MediaTitle {
     }
 
     public boolean isSelected() {
-        return selected;
+        return !isMenu &&  selected;
     }
 
     public void setSelected(boolean selected) {

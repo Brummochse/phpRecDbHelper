@@ -60,14 +60,18 @@ public class MainFrame {
         return listSnapshots;
     }
 
+    public JLabel getLblMediaTitleInfo() {
+        return lblMediaTitleInfo;
+    }
+
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
-    private JPanel pnlVideo;
+    private JPanel pnlMedia;
     private JPanel pnlLoadResource;
     private JButton btnChooseMedia;
     private JTextField tfPath;
-    private JPanel pnlVideoPlayer;
+    private JPanel pnlMediaTitleDetail;
     private JSlider sliderTimeBar;
     private JPanel pnlTimeBar;
     private JLabel lblLength;
@@ -79,6 +83,12 @@ public class MainFrame {
     private JScrollPane scrollbarSnapshots;
     private JPanel pnlSnapshots;
     private JList listSnapshots;
+    private JPanel pnlMediaTitleInfo;
+    private JLabel lblMediaTitleInfo;
 
+    public void resetUi() {
+        lblMediaInfo.setText("");
+        lblMediaTitleInfo.setText("");
 
+    }
 }

@@ -1,11 +1,13 @@
 package phpRecDB.helper.gui;
 
 import phpRecDB.helper.media.data.MediaTitle;
+import phpRecDB.helper.media.data.Medium;
 import phpRecDB.helper.util.ResourceUtil;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -17,10 +19,10 @@ public class MediaTitleTableModel extends AbstractTableModel {
     public static int COL_SELECT_CHECKBOX = 0;
     public static int COL_ICON = 1;
 
-    private Vector<MediaTitle> mediaTitles = new Vector();
+    private Vector<MediaTitle> mediaTitles = new Vector<>();
 
     public List<MediaTitle> getSelectedMediaTitles() {
-        return mediaTitles.stream().filter(e->e.isSelected()).collect(Collectors.toList());
+        return mediaTitles.stream().filter(MediaTitle::isSelected).collect(Collectors.toList());
     }
 
     @Override
@@ -46,7 +48,8 @@ public class MediaTitleTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == COL_SELECT_CHECKBOX;
+        MediaTitle mediaTitle = mediaTitles.get(rowIndex);
+        return columnIndex == COL_SELECT_CHECKBOX && !mediaTitle.isMenu();
     }
 
 
@@ -82,4 +85,10 @@ public class MediaTitleTableModel extends AbstractTableModel {
     public Vector<MediaTitle> getMediaTitles() {
         return mediaTitles;
     }
+
+    public Set<Medium> getMediums() {
+        return mediaTitles.stream().map(MediaTitle::getMedium).collect(Collectors.toSet());
+    }
+
+
 }

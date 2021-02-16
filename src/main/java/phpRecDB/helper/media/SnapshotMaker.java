@@ -41,7 +41,7 @@ public class SnapshotMaker {
     public void snapshot(MediaTitle title, int count, long snapshotAfterSkipDelay) {
         new ProgressBarDialog((e) -> {
             MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
-            mediaPlayer.media().start(title.getMedium().getPath());
+            mediaPlayer.media().start(title.getMedium().getVlcInputString());
             if (title.getTitleId() >= 0) {
                 mediaPlayer.titles().setTitle(title.getTitleId());
             }

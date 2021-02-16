@@ -16,46 +16,6 @@ import java.util.Vector;
 
 public class MediaPathParser {
 
-//    abstract class ProgressWindow {
-//
-//        private Runnable runnable;
-//
-//        public ProgressWindow(Runnable runnable) {
-//            this.runnable = runnable;
-//        }
-//
-//        public void start() {
-//            JFrame f = new JFrame("progress");
-//            Container content = f.getContentPane();
-//            JProgressBar progressBar = new JProgressBar();
-//            progressBar.setStringPainted(true);
-//            Border border = BorderFactory.createTitledBorder("Reading...");
-//            progressBar.setBorder(border);
-//            content.add(progressBar, BorderLayout.NORTH);
-//            f.setSize(300, 100);
-//            f.setVisible(true);
-//
-////            Runnable runnable = new Runnable() {
-////                public void run() {
-////                    try {
-////                        for (int i = 0; i < imgContainers.size(); i++) {
-////                            processImgContainer(imgContainers.get(i));
-////                            int progress = (int) ((double) (i + 1) / imgContainers.size() * 100);
-////                            progressBar.setValue(progress);
-////                        }
-////                        f.setVisible(false);
-////                    } catch (Throwable t) {
-////                        JOptionPane.showMessageDialog(null, t.getClass().getSimpleName() + ": " + t.getMessage());
-////                        throw t; // don't suppress Throwable
-////                    }
-////                }
-////
-////            };
-//            Thread thread = new Thread(runnable);
-//            thread.start();
-//        }
-//    }
-
 
     public Vector<MediaTitle> getTitles(String[] paths) {
 
@@ -65,11 +25,12 @@ public class MediaPathParser {
 
             for (int j = 0; j < paths.length; j++) {
 
-                String currentPath = paths[j];
+//                String currentPath = paths[j];
 
-                currentPath = getVlcInputString(currentPath);
-                Medium medium = new Medium();
-                medium.setPath(currentPath);
+//                currentPath = getVlcInputString(currentPath);
+                Medium medium = new Medium(paths[j]);
+                String currentPath=medium.getVlcInputString();
+
                 List<TitleDescription> titleDescriptions = getTitleDescriptions(currentPath);
 
                 if (titleDescriptions.size() == 0) {

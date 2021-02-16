@@ -21,17 +21,17 @@
           <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
             <constraints border-constraint="Center"/>
             <properties>
-              <text value="E:\video test\Alice Cooper - 2017-09-21 - Rock in Rio, Rio de Janeiro, BRA [Blu-Ray]"/>
+              <text value=""/>
             </properties>
           </component>
         </children>
       </grid>
-      <grid id="91f3b" binding="pnlVideo" layout-manager="BorderLayout" hgap="0" vgap="0">
+      <grid id="91f3b" binding="pnlMedia" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="2e665" binding="pnlVideoPlayer" layout-manager="BorderLayout" hgap="0" vgap="0">
+          <grid id="2e665" binding="pnlMediaTitleDetail" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints border-constraint="East"/>
             <properties/>
             <border type="none"/>
@@ -70,6 +70,22 @@
                     </constraints>
                     <properties>
                       <text value=""/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <grid id="41174" binding="pnlMediaTitleInfo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints border-constraint="North"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="3a06" class="javax.swing.JLabel" binding="lblMediaTitleInfo">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text value="Label"/>
                     </properties>
                   </component>
                 </children>

@@ -22,6 +22,29 @@ public class MediaUtil {
         return isVideoDiscFolder(f, "BDMV");
     }
 
+
+    public static long getFileSystemSize(File folder) {
+        if (folder.isFile()) {
+            return folder.length();
+        }
+        if (folder.isDirectory()) {
+            return getFolderSize(folder);
+        }
+        throw new RuntimeException("can't evaluate file system size");
+    }
+
+    public static long getFolderSize(File folder) {
+        long size=0;
+        for(File file:folder.listFiles()){
+            if(file.isFile()){
+                size+=file.length();
+            }else{
+                size+=getFolderSize(file);
+            }
+        }
+        return size;
+    }
+
     public static void showMediaInfo( MediaPlayer mediaPlayer) {
         VideoTrackInfo t;
         java.util.List<TrackDescription> videoTracks = mediaPlayer.video().trackDescriptions();

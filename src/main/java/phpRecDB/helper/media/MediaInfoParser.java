@@ -4,9 +4,12 @@ import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.MediaUtil;
+import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
+import java.awt.*;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class MediaInfoParser {
@@ -51,8 +54,7 @@ public class MediaInfoParser {
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-                    if (isMediaInfoReady())
-                    {
+                    if (isMediaInfoReady()) {
                         System.out.println("mediaPlayerReady");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
@@ -61,8 +63,7 @@ public class MediaInfoParser {
 
                 @Override
                 public void playing(MediaPlayer mediaPlayer) {
-                    if (isMediaInfoReady())
-                    {
+                    if (isMediaInfoReady()) {
                         System.out.println("playing");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
@@ -71,17 +72,16 @@ public class MediaInfoParser {
 
                 @Override
                 public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
-                    if (isMediaInfoReady())
-                    {
+                    if (isMediaInfoReady()) {
                         System.out.println("positionChanged");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
                 }
-                                @Override
+
+                @Override
                 public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
-                    if (isMediaInfoReady())
-                    {
+                    if (isMediaInfoReady()) {
                         System.out.println("videoOutput");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
@@ -89,8 +89,10 @@ public class MediaInfoParser {
                 }
 
                 private boolean isMediaInfoReady() {
-                    if (mediaPlayer.media().info().videoTracks().size()==1) {
-                        if (mediaPlayer.media().info().videoTracks().get(0).width()>0) {
+                    List<VideoTrackInfo> videoTrackInfos = mediaPlayer.media().info().videoTracks();
+                    //for some unknown reasons sometimes it can happen that there exist one VideoTrackInfo and some of them have no data set
+                    for (VideoTrackInfo videoTrackInfo : videoTrackInfos) {
+                        if (videoTrackInfo.width() > 0) {
                             return true;
                         }
                     }
@@ -98,18 +100,17 @@ public class MediaInfoParser {
                 }
 
             });
-            mediaPlayer.media().start(mediaTitle.getMedium().getPath());
+            mediaPlayer.media().start(mediaTitle.getMedium().getVlcInputString());
             if (mediaTitle.getTitleId() >= 0) {
                 mediaPlayer.titles().setTitle(mediaTitle.getTitleId());
             }
         }
 
         public void readMediaInfo() {
-            mediaInfoReturnValue=new MediaInfo();
+            mediaInfoReturnValue = new MediaInfo();
             mediaInfoReturnValue.setVideoTrackInfos(mediaPlayer.media().info().videoTracks());
             mediaInfoReturnValue.setAudioTrackInfos(mediaPlayer.media().info().audioTracks());
             mediaInfoReturnValue.setLength(mediaPlayer.status().length());
-            mediaInfoReturnValue.setAspectRatio(mediaPlayer.video().aspectRatio());
             latch.countDown();
         }
     }
