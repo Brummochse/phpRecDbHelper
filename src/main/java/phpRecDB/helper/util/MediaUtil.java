@@ -93,13 +93,13 @@ public class MediaUtil {
 
     private static class Waiter extends Thread {
 
+        private static final long TIME_NOT_SET_VALUE =-1;
+
         private final MediaPlayer mediaPlayer;
         private final CountDownLatch latch;
         private final long millisecondsToWait;
         private final TimeChangedListener timeChangedListener = new TimeChangedListener();
-        private long startTime=0;
-
-        private int positionChangedCounter=0;
+        private long startTime= TIME_NOT_SET_VALUE;
 
         public Waiter(MediaPlayer mediaPlayer, long millisecondsToWait, CountDownLatch latch) {
             this.mediaPlayer = mediaPlayer;
@@ -110,13 +110,18 @@ public class MediaUtil {
         @Override
         public void run() {
             mediaPlayer.events().addMediaPlayerEventListener(timeChangedListener);
-            startTime=  mediaPlayer.status().time();
         }
 
         private class TimeChangedListener extends MediaPlayerEventAdapter {
 
             @Override
             public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
+                //for some unknown strange reason it can happen, that VLC jumping back in time. don't know why
+                //in this case it resets the start time to the newTime
+                if (startTime== TIME_NOT_SET_VALUE || newTime<startTime) {
+                    startTime=newTime;
+                }
+
                if (newTime-millisecondsToWait > startTime) {
                    dispose();
                }
@@ -133,12 +138,7 @@ public class MediaUtil {
             mediaPlayer.events().removeMediaPlayerEventListener(timeChangedListener);
             latch.countDown();
         }
-
-        ;
     }
-
-
-
 
     public static void waitForPositionChanged(MediaPlayer mediaPlayer) {
         waitForPositionChanged(mediaPlayer,1);
@@ -193,7 +193,6 @@ public class MediaUtil {
 
         public void positionChangedEvent() {
             positionChangedCounter++;
-//            System.out.println("positionChangedCounter: "+ positionChangedCounter);
             if (positionChangedCounter>=positionChangedMax) {
                 dispose();
             }
@@ -204,6 +203,5 @@ public class MediaUtil {
             latch.countDown();
         }
 
-        ;
     }
 }
