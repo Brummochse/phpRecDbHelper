@@ -5,6 +5,7 @@ import phpRecDB.helper.gui.ProgressBarDialog;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.Medium;
+import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
@@ -16,7 +17,6 @@ import java.util.Vector;
 
 public class MediaPathParser {
 
-
     public Vector<MediaTitle> getTitles(String[] paths) {
 
         Vector<MediaTitle> titles = new Vector<>();
@@ -24,16 +24,13 @@ public class MediaPathParser {
             MediaInfoParser mediaInfoParser = new MediaInfoParser();
 
             for (int j = 0; j < paths.length; j++) {
-
-//                String currentPath = paths[j];
-
-//                currentPath = getVlcInputString(currentPath);
                 Medium medium = new Medium(paths[j]);
-                String currentPath=medium.getVlcInputString();
+                String vlcInputPath=medium.getVlcInputString();
 
-                List<TitleDescription> titleDescriptions = getTitleDescriptions(currentPath);
+                LogUtil.logger.info("start loading medium: "+ vlcInputPath);
+                List<TitleDescription> titleDescriptions = getTitleDescriptions(vlcInputPath);
 
-                if (titleDescriptions.size() == 0) {
+                if (titleDescriptions.size() == 0) { //medium without title separation -> only one media title
                     MediaTitle title = new MediaTitle();
                     title.setTitleId(-1);
                     title.setMedium(medium);
@@ -41,43 +38,36 @@ public class MediaPathParser {
                     titles.add(title);
                     int progress = (int) ((1. + j) / paths.length * 100);
                     e.updateValue(progress);
-                }
-                List<MediaTitle> titlesToParseMediaInfo = new ArrayList<>();
-                for (int i = 0; i < titleDescriptions.size(); i++) {
-                    TitleDescription titleDescription = titleDescriptions.get(i);
-                    MediaTitle mediaTitle = new MediaTitle();
-                    mediaTitle.setMenu(titleDescription.isMenu());
-                    mediaTitle.setTitleId(i);
-                    mediaTitle.setMedium(medium);
-                    mediaTitle.setName(titleDescription.name());
-                    if (!titleDescription.isMenu()) {
-                        // in tests some (blu ray) menus caused problems
-                        // for this reason only no-menu titles are remembered for further media info analysis
-                        titlesToParseMediaInfo.add(mediaTitle);
-                    } else {
-                        mediaTitle.setMediaInfo(new MediaInfo());
+                } else { //medium with title separation -> parse all media titles
+                    List<MediaTitle> titlesToParseMediaInfo = new ArrayList<>();
+                    for (int i = 0; i < titleDescriptions.size(); i++) {
+                        TitleDescription titleDescription = titleDescriptions.get(i);
+                        MediaTitle mediaTitle = new MediaTitle();
+                        mediaTitle.setMenu(titleDescription.isMenu());
+                        mediaTitle.setTitleId(i);
+                        mediaTitle.setMedium(medium);
+                        mediaTitle.setName(titleDescription.name());
+                        if (!titleDescription.isMenu()) {
+                            // in tests some (blu ray) menus caused problems
+                            // for this reason only no-menu titles are remembered for further media info analysis
+                            titlesToParseMediaInfo.add(mediaTitle);
+                        } else {
+                            mediaTitle.setMediaInfo(new MediaInfo());
+                        }
+                        titles.add(mediaTitle);
                     }
-                    titles.add(mediaTitle);
+                    for (int i = 0; i < titlesToParseMediaInfo.size(); i++) {
+                        MediaTitle mediaTitle = titlesToParseMediaInfo.get(i);
+                        mediaTitle.setMediaInfo(mediaInfoParser.parseMediaInfo(mediaTitle));
+                        int progress = (int) (((1. + i) / titlesToParseMediaInfo.size() + j) * (100 / paths.length));
+                        e.updateValue(progress);
+                    }
                 }
-                for (int i = 0; i < titlesToParseMediaInfo.size(); i++) {
-                    MediaTitle mediaTitle = titlesToParseMediaInfo.get(i);
-                    mediaTitle.setMediaInfo(mediaInfoParser.parseMediaInfo(mediaTitle));
-                    int progress = (int) (((1. + i) / titlesToParseMediaInfo.size() + j) * (100 / paths.length));
-                    e.updateValue(progress);
-                }
+
             }
         }).start();
 
         return titles;
-    }
-
-    private String getVlcInputString(String path) {
-        File file = new File(path);
-        if (file.isDirectory() && MediaUtil.isBRFolder(file)) {
-            return "bluray:///" + path;
-        }
-
-        return path;
     }
 
     private List<TitleDescription> getTitleDescriptions(String path) {

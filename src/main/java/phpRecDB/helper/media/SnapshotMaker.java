@@ -4,6 +4,7 @@ import phpRecDB.helper.Constants;
 import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.gui.ProgressBarDialog;
 import phpRecDB.helper.media.data.MediaTitle;
+import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -22,8 +23,18 @@ public class SnapshotMaker {
         //       System.getProperty("user.home");
         String appPathStr = System.getProperty("user.dir");//TODO check if this working on other os
         File path = new File(appPathStr + File.separator + "snapshots");
-        path.mkdir();
+        makeDir(path);
         return path;
+    }
+
+    private static void makeDir(File path) {
+        if (!path.exists()) {
+            if (path.mkdir()) {
+                LogUtil.logger.info("created folder: "+ path.getAbsolutePath());
+            } else {
+                LogUtil.logger.severe("can't create folder: "+ path.getAbsolutePath());
+            }
+        }
     }
 
     public static void createNewSnapshotFolder() {
@@ -34,11 +45,12 @@ public class SnapshotMaker {
             counter++;
             newSnapshotFolder=new File(snapshotBaseFolder,""+counter);
         } while (newSnapshotFolder.exists());
-        newSnapshotFolder.mkdir();
+        makeDir(newSnapshotFolder);
         SnapshotMaker.snapshotFolder=newSnapshotFolder;
     }
 
     public void snapshot(MediaTitle title, int count, long snapshotAfterSkipDelay) {
+        LogUtil.logger.info("snapshotting "+title.getMedium().getPath()+" title "+title.getTitleId()+ " (count:"+count+", delay:"+snapshotAfterSkipDelay+")");
         new ProgressBarDialog((e) -> {
             MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
             mediaPlayer.media().start(title.getMedium().getVlcInputString());
@@ -46,19 +58,24 @@ public class SnapshotMaker {
                 mediaPlayer.titles().setTitle(title.getTitleId());
             }
             MediaUtil.waitForPositionChanged(mediaPlayer);
-
             long length = mediaPlayer.status().length();
+            LogUtil.logger.info("vlc player started. video length: "+TimeUtil.convertMillisecondsToTimeStr(length));
+
             for (int i = 0; i < count; i++) {
                 boolean saved = false;
                 do {
                     long randomTime = (long) (Math.random() * length);
                     mediaPlayer.controls().setTime(randomTime);
+                    LogUtil.logger.info("vlc player jump to "+TimeUtil.convertMillisecondsToTimeStr(randomTime));
                     MediaUtil.playVideoAndWait(mediaPlayer, snapshotAfterSkipDelay);
+                    LogUtil.logger.info("waited delay");
                     String snapshotFileName = getFileName(title, mediaPlayer.status().time());
+                    LogUtil.logger.info("evaluate file name:"+snapshotFileName);
                     File file = new File(snapshotFolder, snapshotFileName);
                     mediaPlayer.snapshots().save(file);
                     saved = file.exists();
-                } while (saved == false);
+                    LogUtil.logger.info("save success: " +(saved?"true":"false"));
+                } while (!saved);
 
                 int progress = (int) ((1. + i) / count * 100);
                 e.updateValue(progress);

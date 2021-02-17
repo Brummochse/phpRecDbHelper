@@ -3,6 +3,7 @@ package phpRecDB.helper.media;
 import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
+import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -19,6 +20,7 @@ public class MediaInfoParser {
     public MediaInfo parseMediaInfo(MediaTitle mediaTitle) {
         latch = new CountDownLatch(1);
 
+        LogUtil.logger.info("start vlc to parse media title "+ mediaTitle.getTitleId());
         MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
         MediaPlayerThread mediaPlayerThread = new MediaPlayerThread(mediaTitle, mediaPlayer);
         try {
@@ -55,7 +57,7 @@ public class MediaInfoParser {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
                     if (isMediaInfoReady()) {
-                        System.out.println("mediaPlayerReady");
+                        LogUtil.logger.info("catch vlc event: mediaPlayerReady");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
@@ -64,7 +66,7 @@ public class MediaInfoParser {
                 @Override
                 public void playing(MediaPlayer mediaPlayer) {
                     if (isMediaInfoReady()) {
-                        System.out.println("playing");
+                        LogUtil.logger.info("catch vlc event: playing");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
@@ -73,7 +75,7 @@ public class MediaInfoParser {
                 @Override
                 public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
                     if (isMediaInfoReady()) {
-                        System.out.println("positionChanged");
+                        LogUtil.logger.info("catch vlc event: positionChanged");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
@@ -82,7 +84,7 @@ public class MediaInfoParser {
                 @Override
                 public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
                     if (isMediaInfoReady()) {
-                        System.out.println("videoOutput");
+                        LogUtil.logger.info("catch vlc event: videoOutput");
                         MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
