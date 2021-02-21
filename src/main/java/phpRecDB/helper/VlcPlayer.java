@@ -1,8 +1,5 @@
 package phpRecDB.helper;
 
-import phpRecDB.helper.util.MediaUtil;
-import phpRecDB.helper.util.ResourceUtil;
-import phpRecDB.helper.util.TimeUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent;
 

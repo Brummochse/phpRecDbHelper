@@ -2,6 +2,7 @@ package phpRecDB.helper.media.data;
 
 import phpRecDB.helper.gui.MediaTitleTableModel;
 import phpRecDB.helper.util.TimeUtil;
+import phpRecDB.helper.web.VideoRecord;
 
 import java.util.List;
 import java.util.Set;
@@ -29,15 +30,11 @@ public class MediaTitlesSummarization {
         String s = "";
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
 
-        long length = 0;
-        for (MediaTitle mediaTitle : selectedMediaTitles) {
-            length += mediaTitle.getMediaInfo().getLength();
-        }
-        s += "Length: " + TimeUtil.convertMillisecondsToTimeStr(length);
+        s += "Length: " + TimeUtil.convertMillisecondsToTimeStr(getLength(selectedMediaTitles));
 
-        s+=getSimilarValueString("Aspect Ratio", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getAspectRatio()));
-        s+=getSimilarValueString("Resolution", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getResolution()));
-        s+=getSimilarValueString("Type", mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()));
+        s += getSimilarValueString("Aspect Ratio", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getAspectRatio()));
+        s += getSimilarValueString("Resolution", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getResolution()));
+        s += getSimilarValueString("Type", mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()));
 
         long sizeInBytes = evaluateFileSize();
         if (sizeInBytes > 0) {
@@ -46,6 +43,14 @@ public class MediaTitlesSummarization {
             s += "<br>File Size: " + sizeInMb + " MB";
         }
         return "<html>" + s + "</html>";
+    }
+
+    public long getLength(List<MediaTitle> selectedMediaTitles) {
+        long length = 0;
+        for (MediaTitle mediaTitle : selectedMediaTitles) {
+            length += mediaTitle.getMediaInfo().getLength();
+        }
+        return length;
     }
 
 
@@ -58,6 +63,16 @@ public class MediaTitlesSummarization {
             return mediums.stream().collect(Collectors.summarizingLong(e -> e.getFileSystemSize())).getSum();
         }
         return 0;
+
+    }
+
+    public VideoRecord getTransferVideoRecord() {
+        List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
+
+        VideoRecord videoRecord = new VideoRecord();
+        videoRecord.setTime(getLength(selectedMediaTitles));
+
+        return videoRecord;
 
     }
 }

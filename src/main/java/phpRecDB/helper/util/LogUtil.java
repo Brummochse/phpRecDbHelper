@@ -1,7 +1,10 @@
 package phpRecDB.helper.util;
 
 import java.io.IOException;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 
 public class LogUtil {
@@ -13,15 +16,12 @@ public class LogUtil {
 
     static {
         Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
         logger.setLevel(Level.INFO);
         try {
             fileTxt = new FileHandler("Logging.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // create a TXT formatter
         formatterTxt = new SimpleFormatter();
         fileTxt.setFormatter(formatterTxt);
         logger.addHandler(fileTxt);

@@ -10,6 +10,8 @@ import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.MediaTitlesSummarization;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
+import phpRecDB.helper.web.Connector;
+import phpRecDB.helper.web.VideoRecord;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
@@ -46,7 +48,7 @@ public class MainController {
 
 
     private void initView() {
-        JFrame frame = new JFrame("MainFrame");
+        JFrame frame = new JFrame("phpRecDB Helper (build:2021-02-17)");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -58,6 +60,7 @@ public class MainController {
 
         mediaTitleTableModel = new MediaTitleTableModel();
         mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
+
         mainFrame.getTableMediaTitles().setDefaultRenderer(MediaTitle.class, new MediaTitleCellRenderer());
         mainFrame.getTableMediaTitles().addPropertyChangeListener(e->updateMediaTitlesSummary());
 
@@ -65,6 +68,8 @@ public class MainController {
         mainFrame.getTableMediaTitles().getColumnModel().getColumn(1).setMaxWidth(20);
         mainFrame.getTableMediaTitles().setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         mainFrame.getTableMediaTitles().setShowGrid(false);
+        //remove header, which is caused by the surrounded scrollpane: https://stackoverflow.com/questions/2528643/jtable-without-a-header
+        mainFrame.getTableMediaTitles().getTableHeader().setUI(null);
 
         mainFrame.getTableMediaTitles().getSelectionModel().addListSelectionListener((SingleListSelectionEvent) (e) -> titlesSelectionChangedAction());
         mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooserAction());
@@ -75,7 +80,7 @@ public class MainController {
 
         snapshotController = new SnapshotController(mainFrame.getListSnapshots());
 
-        mainFrame.getBtnTest().addActionListener(e -> updateMediaTitlesSummary());
+        mainFrame.getBtnTest().addActionListener(e -> webTest());
     }
 
     private void updateMediaTitlesSummary() {
@@ -117,12 +122,17 @@ public class MainController {
     }
 
     private void webTest() {
-        //            Connector connector = new Connector();
-    //            SnapshotMaker.createNewSnapshotFolder();
-    //            snapshotController.loadSnapshotThumbnailsAction();
-    ////            connector.get();
-    ////            connector.create();
-    //            connector.update(snapshotController.getSnapshots());
+
+        MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
+        VideoRecord transferVideoRecord = mediaTitlesSummarization.getTransferVideoRecord();
+
+        Connector connector = new Connector();
+                SnapshotMaker.createNewSnapshotFolder();
+                snapshotController.loadSnapshotThumbnailsAction();
+//                connector.get();
+    //            connector.create();
+//                connector.update(transferVideoRecord);
+                connector.getRecordDescription(493);
     }
 
     private void openMediaAction() {

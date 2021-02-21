@@ -85,6 +85,7 @@ public class MainFrame {
     private JList listSnapshots;
     private JPanel pnlMediaTitleInfo;
     private JLabel lblMediaTitleInfo;
+    private JPanel pnlMediaTitles;
 
     public void resetUi() {
         lblMediaInfo.setText("");
