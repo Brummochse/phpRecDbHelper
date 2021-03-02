@@ -17,7 +17,7 @@ public class VideoFileType extends Type {
     @Override
     public boolean checkFile(File file) {
         if (file.isFile()) {
-            String ext = file.getName().substring(file.getName().lastIndexOf('.') + 1);
+            String ext = file.getName().substring(file.getName().lastIndexOf('.') + 1).toLowerCase();
             if (videoFileEndings.contains(ext)) {
                 return true;
             }
