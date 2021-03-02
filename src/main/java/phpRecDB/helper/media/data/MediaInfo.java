@@ -9,6 +9,7 @@ import java.util.List;
 
 public class MediaInfo {
 
+    public static final String RESOLUTION_DIMENSIONS_SEPARATOR ="x";
     private long length = 0;
     private VideoTrackInfo videoTrackInfo = null;
     private List<VideoTrackInfo> videoTrackInfos = new ArrayList<>();
@@ -67,8 +68,10 @@ public class MediaInfo {
         if (videoTrackInfo==null) {
             return "";
         }
-        return videoTrackInfo.width() + ":" + videoTrackInfo.height();
+        return videoTrackInfo.width() + RESOLUTION_DIMENSIONS_SEPARATOR + videoTrackInfo.height();
     }
+
+
 
     public String getAspectRatio() {
         if (videoTrackInfo==null || videoTrackInfo.sampleAspectRatioBase()==0  || videoTrackInfo.sampleAspectRatio()==0) {

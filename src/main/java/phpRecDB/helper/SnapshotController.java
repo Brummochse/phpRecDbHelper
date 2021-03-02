@@ -1,23 +1,24 @@
 package phpRecDB.helper;
 
+import org.apache.commons.io.FileUtils;
 import phpRecDB.helper.gui.ProgressBarDialog;
 import phpRecDB.helper.gui.SnapshotThumbnail;
 import phpRecDB.helper.gui.ThumbnailListRenderer;
 import phpRecDB.helper.lambdaInterface.KeyPressedListener;
-import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.lambdaInterface.MouseDoubleClickedListener;
+import phpRecDB.helper.media.SnapshotMaker;
+import phpRecDB.helper.web.Screenshot;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,21 @@ public class SnapshotController {
         initView();
     }
 
+    public Vector<Screenshot> getSnapshots() {
+        Vector<Screenshot> screenshots = new Vector<>();
+        for (SnapshotThumbnail snapshot : Collections.list(snapshotThumbnailListModel.elements())) {
+            try {
+                File imgFile = snapshot.getImgFile();
+                byte[] fileContent = FileUtils.readFileToByteArray(imgFile);
+                String encodedString = Base64.getEncoder().encodeToString(fileContent);
+                screenshots.add(new Screenshot(encodedString));
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return screenshots;
+    }
     private void initView() {
         snapshotThumbnailList.setModel(snapshotThumbnailListModel);
         snapshotThumbnailList.setCellRenderer(new ThumbnailListRenderer());

@@ -1,16 +1,15 @@
 package phpRecDB.helper.media.data;
 
 import phpRecDB.helper.gui.MediaTitleTableModel;
-import phpRecDB.helper.util.TimeUtil;
-import phpRecDB.helper.web.VideoRecord;
+import phpRecDB.helper.web.RecordInfo;
 
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MediaTitlesSummarization {
+
 
     private final MediaTitleTableModel mediaTitleTableModel;
 
@@ -18,31 +17,41 @@ public class MediaTitlesSummarization {
         this.mediaTitleTableModel = mediaTitleTableModel;
     }
 
-    private String getSimilarValueString(String name, Stream<String> stream) {
-        Set<String> aspectRatios = stream.collect(Collectors.toSet());
-        if (aspectRatios.size() == 1) {
-            return "<br>" + name + ": " + aspectRatios.iterator().next();
-        }
-        return "";
-    }
-
-    public String createSummary() {
-        String s = "";
+    public RecordInfo getRecordInfo() {
+        RecordInfo recordInfo = new RecordInfo();
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
 
-        s += "Length: " + TimeUtil.convertMillisecondsToTimeStr(getLength(selectedMediaTitles));
 
-        s += getSimilarValueString("Aspect Ratio", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getAspectRatio()));
-        s += getSimilarValueString("Resolution", selectedMediaTitles.stream().map(e -> e.getMediaInfo().getResolution()));
-        s += getSimilarValueString("Type", mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()));
+        recordInfo.setLength(getLength(selectedMediaTitles));
 
-        long sizeInBytes = evaluateFileSize();
-        if (sizeInBytes > 0) {
-            long sizeinKb = sizeInBytes / 1024;
-            long sizeInMb = sizeinKb / 1024;
-            s += "<br>File Size: " + sizeInMb + " MB";
+        Set<String> aspectRatios = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getAspectRatio()).collect(Collectors.toSet());
+        if (aspectRatios.size() == 1) {
+            recordInfo.setAspectRatio(aspectRatios.iterator().next());
         }
-        return "<html>" + s + "</html>";
+
+        Set<String> resolutions = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getResolution()).collect(Collectors.toSet());
+        if (resolutions.size() == 1) {
+            String resolution = resolutions.iterator().next();
+            String[] resolutionDimensions = resolution.split(MediaInfo.RESOLUTION_DIMENSIONS_SEPARATOR);
+            recordInfo.setWidth(Integer.parseInt(resolutionDimensions[0]));
+            recordInfo.setHeight(Integer.parseInt(resolutionDimensions[1]));
+        }
+
+        Set<String> mediaTypes = mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()).collect(Collectors.toSet());
+        if (mediaTypes.size() == 1) {
+            recordInfo.setType(mediaTypes.iterator().next());
+        }
+
+        recordInfo.setSize(evaluateFileSize());
+
+        Set<Medium> selectedMedia = selectedMediaTitles.stream().map(MediaTitle::getMedium).collect(Collectors.toSet());
+        recordInfo.setMediaCount(selectedMedia.size());
+
+        boolean hasMenu = mediaTitleTableModel.getMediaTitles().stream().anyMatch(e -> e.isMenu());
+        recordInfo.setMenu(hasMenu);
+
+        return recordInfo;
+
     }
 
     public long getLength(List<MediaTitle> selectedMediaTitles) {
@@ -63,16 +72,6 @@ public class MediaTitlesSummarization {
             return mediums.stream().collect(Collectors.summarizingLong(e -> e.getFileSystemSize())).getSum();
         }
         return 0;
-
-    }
-
-    public VideoRecord getTransferVideoRecord() {
-        List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
-
-        VideoRecord videoRecord = new VideoRecord();
-        videoRecord.setTime(getLength(selectedMediaTitles));
-
-        return videoRecord;
 
     }
 }

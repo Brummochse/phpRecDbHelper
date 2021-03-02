@@ -44,8 +44,8 @@ public class MainFrame {
         return btnSnapshot;
     }
 
-    public JButton getBtnTest() {
-        return btnTest;
+    public JButton getSendToPhpRecDb() {
+        return btnSendToPhpRecDb;
     }
 
     public JPanel getPnlSnapshots() {
@@ -64,6 +64,22 @@ public class MainFrame {
         return lblMediaTitleInfo;
     }
 
+    public PlaceholderTextField getTfPhpRecDbUrl() {
+        return tfPhpRecDbUrl;
+    }
+
+    public JButton getBtnConnect() {
+        return btnConnect;
+    }
+
+    public JLabel getLblRecordInfo() {
+        return lblRecordInfo;
+    }
+
+    public JButton getBtnPasteFromClipboard() {
+        return btnPasteFromClipboard;
+    }
+
     private JPanel pnlMain;
     private JPanel pnlControls;
     private JPanel pnlVlc;
@@ -79,17 +95,22 @@ public class MainFrame {
     private JLabel lblMediaInfo;
     private JTable tableMediaTitles;
     private JButton btnSnapshot;
-    private JButton btnTest;
+    private JButton btnSendToPhpRecDb;
     private JScrollPane scrollbarSnapshots;
     private JPanel pnlSnapshots;
     private JList listSnapshots;
     private JPanel pnlMediaTitleInfo;
     private JLabel lblMediaTitleInfo;
     private JPanel pnlMediaTitles;
+    private PlaceholderTextField tfPhpRecDbUrl;
+    private JButton btnConnect;
+    private JLabel lblRecordInfo;
+    private JButton btnPasteFromClipboard;
 
     public void resetUi() {
         lblMediaInfo.setText("");
         lblMediaTitleInfo.setText("");
+        tfPhpRecDbUrl.setText("");
 
     }
 }

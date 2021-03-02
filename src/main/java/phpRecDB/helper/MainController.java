@@ -11,13 +11,20 @@ import phpRecDB.helper.media.data.MediaTitlesSummarization;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
 import phpRecDB.helper.web.Connector;
-import phpRecDB.helper.web.VideoRecord;
+import phpRecDB.helper.web.RecordDescription;
+import phpRecDB.helper.web.RecordInfo;
+import phpRecDB.helper.web.Screenshot;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
@@ -48,7 +55,7 @@ public class MainController {
 
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper (build:2021-02-17)");
+        JFrame frame = new JFrame("phpRecDB Helper (build:2021-03-02)");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -80,12 +87,55 @@ public class MainController {
 
         snapshotController = new SnapshotController(mainFrame.getListSnapshots());
 
-        mainFrame.getBtnTest().addActionListener(e -> webTest());
+        mainFrame.getSendToPhpRecDb().addActionListener(e -> sendToPhpRecDb());
+
+        mainFrame.getBtnConnect().addActionListener(e->connectToRecord());
+        mainFrame.getTfPhpRecDbUrl().addActionListener(e -> connectToRecord());
+        mainFrame.getTfPhpRecDbUrl().getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                phpRecDbUrlChanged();
+            }
+            public void removeUpdate(DocumentEvent e) {
+                phpRecDbUrlChanged();
+
+            }
+            public void changedUpdate(DocumentEvent e) {
+                phpRecDbUrlChanged();
+            }
+        });
+        mainFrame.getBtnPasteFromClipboard().addActionListener(e->pasteUrlFromClipboard());
+    }
+
+    private void phpRecDbUrlChanged() {
+        mainFrame.getLblRecordInfo().setText("");
+        mainFrame.getSendToPhpRecDb().setEnabled(false);
+    }
+
+    private void pasteUrlFromClipboard() {
+        try {
+            String data = (String) Toolkit.getDefaultToolkit()
+                    .getSystemClipboard().getData(DataFlavor.stringFlavor);
+
+            mainFrame.getTfPhpRecDbUrl().setText(data);
+        } catch (UnsupportedFlavorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void connectToRecord() {
+        Connector connector = new Connector();
+        String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
+        RecordDescription recordInfo = connector.getRecordInfo(recordUrl);
+        mainFrame.getLblRecordInfo().setText(recordInfo.toString());
+        mainFrame.getSendToPhpRecDb().setEnabled(true);
     }
 
     private void updateMediaTitlesSummary() {
         MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
-        mainFrame.getLblMediaInfo().setText(mediaTitlesSummarization.createSummary());
+        RecordInfo recordInfo = mediaTitlesSummarization.getRecordInfo();
+        mainFrame.getLblMediaInfo().setText(recordInfo.toString());
     }
 
     private void snapshotAction() {
@@ -121,33 +171,38 @@ public class MainController {
         MediaUtil.showMediaInfo(this.previewMediaPlayerController.mediaPlayer);
     }
 
-    private void webTest() {
+    private void sendToPhpRecDb() {
+        String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
+
+
 
         MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
-        VideoRecord transferVideoRecord = mediaTitlesSummarization.getTransferVideoRecord();
+        RecordInfo recordInfo = mediaTitlesSummarization.getRecordInfo();
 
         Connector connector = new Connector();
-                SnapshotMaker.createNewSnapshotFolder();
-                snapshotController.loadSnapshotThumbnailsAction();
+//                SnapshotMaker.createNewSnapshotFolder();
+//                snapshotController.loadSnapshotThumbnailsAction();
 //                connector.get();
     //            connector.create();
 //                connector.update(transferVideoRecord);
-                connector.getRecordDescription(493);
+                connector.updateRecord(recordUrl,recordInfo);
+
+
+        Vector<Screenshot> snapshots = snapshotController.getSnapshots();
+        for (Screenshot snapshot : snapshots) {
+            connector.addSnapshot(recordUrl,snapshot);
+        }
+
+
     }
 
     private void openMediaAction() {
-
         mainFrame.resetUi();
-
-
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
         MediaPathParser parser = new MediaPathParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
-
         mediaTitleTableModel.setMediaTitles(titles);
-
         updateMediaTitlesSummary();
-
         SnapshotMaker.createNewSnapshotFolder();
     }
 
