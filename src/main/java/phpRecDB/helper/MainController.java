@@ -8,6 +8,7 @@ import phpRecDB.helper.media.MediaPathParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.MediaTitlesSummarization;
+import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
 import phpRecDB.helper.web.Connector;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 
 
 public class MainController {
@@ -38,9 +40,7 @@ public class MainController {
     private SnapshotController snapshotController;
 
     public static void main(String[] args) {
-
-        MainController mainController = new MainController();
-
+        new MainController();
     }
 
     public MainController() {
@@ -49,13 +49,14 @@ public class MainController {
             JOptionPane.showMessageDialog(null, "No suitable VLC installation could be found. Please restart this application.", "Error", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
         }
-
         SwingUtilities.invokeLater(this::initView);
+
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> LogUtil.logger.log(Level.SEVERE,"Exceptoin throws",e));
     }
 
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper (build:2021-03-02)");
+        JFrame frame = new JFrame("phpRecDB Helper");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -97,7 +98,6 @@ public class MainController {
             }
             public void removeUpdate(DocumentEvent e) {
                 phpRecDbUrlChanged();
-
             }
             public void changedUpdate(DocumentEvent e) {
                 phpRecDbUrlChanged();
@@ -163,36 +163,36 @@ public class MainController {
            }
         }
         snapshotController.loadSnapshotThumbnailsAction();
-
-    }
-
-
-    private void showMediaInfo() {
-        MediaUtil.showMediaInfo(this.previewMediaPlayerController.mediaPlayer);
     }
 
     private void sendToPhpRecDb() {
         String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
-
-
-
         MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
         RecordInfo recordInfo = mediaTitlesSummarization.getRecordInfo();
-
-        Connector connector = new Connector();
-//                SnapshotMaker.createNewSnapshotFolder();
-//                snapshotController.loadSnapshotThumbnailsAction();
-//                connector.get();
-    //            connector.create();
-//                connector.update(transferVideoRecord);
-                connector.updateRecord(recordUrl,recordInfo);
-
-
         Vector<Screenshot> snapshots = snapshotController.getSnapshots();
-        for (Screenshot snapshot : snapshots) {
-            connector.addSnapshot(recordUrl,snapshot);
-        }
 
+        new ProgressBarDialog((e) -> {
+            e.setTitle("send record infos");
+
+            Connector connector = new Connector();
+            connector.updateRecord(recordUrl, recordInfo);
+
+            int progress = (int) (1.0/(snapshots.size()+1) * 100);
+            System.out.println("progress: "+progress);
+
+            e.updateValue(progress);
+
+            for (int i = 0; i < snapshots.size(); i++) {
+                e.setTitle("send screenshot:"+(i+1));
+
+                Screenshot snapshot = snapshots.get(i);
+                connector.addSnapshot(recordUrl, snapshot);
+
+                progress = (int) ((i+2.0)/(snapshots.size()+1) * 100);
+                System.out.println("progress: "+progress);
+                e.updateValue(progress);
+            }
+        }).start();
 
     }
 

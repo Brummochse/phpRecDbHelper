@@ -4,8 +4,6 @@ import phpRecDB.helper.Constants;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class SnapshotOptionDialog {
     private JTextField tfCount;
@@ -48,19 +46,5 @@ public class SnapshotOptionDialog {
 
     private void createUIComponents() {
     }
-
-    private class InstantTooltipMouseAdapter extends MouseAdapter {
-        final int defaultTimeout = ToolTipManager.sharedInstance().getInitialDelay();
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            ToolTipManager.sharedInstance().setInitialDelay(0);
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            ToolTipManager.sharedInstance().setInitialDelay(defaultTimeout);
-        }
-    };
 
 }

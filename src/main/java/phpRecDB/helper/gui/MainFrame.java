@@ -1,8 +1,22 @@
 package phpRecDB.helper.gui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
 
 public class MainFrame {
+
+    public MainFrame() {
+        lblHelpSnapshots.addMouseListener(new InstantTooltipMouseAdapter());
+        lblHelpSnapshots.setToolTipText("<html>double click a snapshot to open it in system viewer<br><br>press DELTE-Key to remove a snapshot</html>");
+
+        Border margin = new EmptyBorder(10,10,10,10);
+        pnlMediaSelection.setBorder(new CompoundBorder(pnlMediaSelection.getBorder(), margin));
+        pnlConnection.setBorder(new CompoundBorder(pnlConnection.getBorder(), margin));
+        pnlRecordInfo.setBorder(new CompoundBorder(pnlRecordInfo.getBorder(), margin));
+        pnlSnapshots.setBorder(new CompoundBorder(pnlSnapshots.getBorder(), margin));
+    }
 
     public JTable getTableMediaTitles() {
         return tableMediaTitles;
@@ -81,7 +95,7 @@ public class MainFrame {
     }
 
     private JPanel pnlMain;
-    private JPanel pnlControls;
+    private JPanel pnlConnection;
     private JPanel pnlVlc;
     private JPanel pnlMedia;
     private JPanel pnlLoadResource;
@@ -106,6 +120,9 @@ public class MainFrame {
     private JButton btnConnect;
     private JLabel lblRecordInfo;
     private JButton btnPasteFromClipboard;
+    private JLabel lblHelpSnapshots;
+    private JPanel pnlMediaSelection;
+    private JPanel pnlRecordInfo;
 
     public void resetUi() {
         lblMediaInfo.setText("");

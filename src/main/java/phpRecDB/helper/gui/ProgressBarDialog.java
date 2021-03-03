@@ -1,12 +1,14 @@
 package phpRecDB.helper.gui;
 
 import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class ProgressBarDialog extends JDialog {
+
+    private TitledBorder border;
 
     public interface ProgressbarExecutable {
         void execute(ProgressBarDialog param);
@@ -27,7 +29,7 @@ public class ProgressBarDialog extends JDialog {
         Container content = this.getContentPane();
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
-        Border border = BorderFactory.createTitledBorder("Reading...");
+        border = BorderFactory.createTitledBorder("Reading...");
         progressBar.setBorder(border);
         content.add(progressBar, BorderLayout.NORTH);
         this.setSize(300, 100);
@@ -63,6 +65,15 @@ public class ProgressBarDialog extends JDialog {
     }
 
     public void updateValue(int value) {
+        progressBar.setValue(value);
+    }
+
+    public void setTitle(String title) {
+        border.setTitle(title);
+    }
+
+    public void updateValue(int value, String title) {
+        border.setTitle(title);
         progressBar.setValue(value);
     }
 

@@ -7,128 +7,245 @@
     <properties/>
     <border type="none"/>
     <children>
-      <grid id="cb433" binding="pnlLoadResource" layout-manager="BorderLayout" hgap="0" vgap="0">
-        <constraints border-constraint="North"/>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="b5064" class="javax.swing.JButton" binding="btnChooseMedia">
-            <constraints border-constraint="West"/>
-            <properties>
-              <text value="..."/>
-            </properties>
-          </component>
-          <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
-            <constraints border-constraint="Center"/>
-            <properties>
-              <text value=""/>
-            </properties>
-          </component>
-        </children>
-      </grid>
-      <grid id="91f3b" binding="pnlMedia" layout-manager="BorderLayout" hgap="0" vgap="0">
+      <grid id="d0dd2" binding="pnlMediaSelection" layout-manager="BorderLayout" hgap="0" vgap="0">
         <constraints border-constraint="Center"/>
         <properties/>
-        <border type="none"/>
+        <border type="etched" title="Media Selection"/>
         <children>
-          <grid id="2e665" binding="pnlMediaTitleDetail" layout-manager="BorderLayout" hgap="0" vgap="0">
-            <constraints border-constraint="East"/>
+          <grid id="91f3b" binding="pnlMedia" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="Center"/>
             <properties/>
             <border type="none"/>
             <children>
-              <grid id="52cd1" binding="pnlVlc" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints border-constraint="Center"/>
-                <properties>
-                  <minimumSize width="10" height="10"/>
-                </properties>
-                <border type="none"/>
-                <children/>
-              </grid>
-              <grid id="123d6" binding="pnlTimeBar" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
-                <constraints border-constraint="South"/>
+              <grid id="2e665" binding="pnlMediaTitleDetail" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="East"/>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="e8148" class="javax.swing.JSlider" binding="sliderTimeBar">
-                    <constraints>
-                      <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                    </constraints>
+                  <grid id="52cd1" binding="pnlVlc" layout-manager="BorderLayout" hgap="0" vgap="0">
+                    <constraints border-constraint="Center"/>
+                    <properties>
+                      <minimumSize width="10" height="10"/>
+                    </properties>
+                    <border type="none"/>
+                    <children/>
+                  </grid>
+                  <grid id="123d6" binding="pnlTimeBar" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints border-constraint="South"/>
                     <properties/>
-                  </component>
-                  <component id="908e0" class="javax.swing.JLabel" binding="lblLength">
-                    <constraints>
-                      <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value=""/>
-                    </properties>
-                  </component>
-                  <component id="eedc2" class="javax.swing.JLabel" binding="lblCurrentTime">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value=""/>
-                    </properties>
-                  </component>
+                    <border type="none"/>
+                    <children>
+                      <component id="e8148" class="javax.swing.JSlider" binding="sliderTimeBar">
+                        <constraints>
+                          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties/>
+                      </component>
+                      <component id="908e0" class="javax.swing.JLabel" binding="lblLength">
+                        <constraints>
+                          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                      <component id="eedc2" class="javax.swing.JLabel" binding="lblCurrentTime">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value=""/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                  <grid id="41174" binding="pnlMediaTitleInfo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                    <margin top="0" left="0" bottom="0" right="0"/>
+                    <constraints border-constraint="North"/>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="3a06" class="javax.swing.JLabel" binding="lblMediaTitleInfo">
+                        <constraints>
+                          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                        </constraints>
+                        <properties>
+                          <text value="Label"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
                 </children>
               </grid>
-              <grid id="41174" binding="pnlMediaTitleInfo" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-                <margin top="0" left="0" bottom="0" right="0"/>
-                <constraints border-constraint="North"/>
+              <grid id="e936b" binding="pnlMediaTitles" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="Center"/>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="3a06" class="javax.swing.JLabel" binding="lblMediaTitleInfo">
-                    <constraints>
-                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                    </constraints>
-                    <properties>
-                      <text value="Label"/>
-                    </properties>
-                  </component>
+                  <scrollpane id="d9fd5">
+                    <constraints border-constraint="Center"/>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="9b565" class="javax.swing.JTable" binding="tableMediaTitles">
+                        <constraints/>
+                        <properties/>
+                      </component>
+                    </children>
+                  </scrollpane>
                 </children>
               </grid>
             </children>
           </grid>
-          <scrollpane id="83601" binding="scrollbarSnapshots">
-            <constraints border-constraint="South"/>
-            <properties>
-              <horizontalScrollBarPolicy value="32"/>
-              <preferredSize width="10" height="170"/>
-              <verticalScrollBarPolicy value="21"/>
-            </properties>
-            <border type="none"/>
-            <children>
-              <component id="63dc3" class="javax.swing.JList" binding="listSnapshots">
-                <constraints/>
-                <properties>
-                  <layoutOrientation value="2"/>
-                </properties>
-              </component>
-            </children>
-          </scrollpane>
-          <grid id="e936b" binding="pnlMediaTitles" layout-manager="BorderLayout" hgap="0" vgap="0">
-            <constraints border-constraint="Center"/>
+          <grid id="cb433" binding="pnlLoadResource" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="North"/>
             <properties/>
             <border type="none"/>
             <children>
-              <scrollpane id="d9fd5">
+              <component id="b5064" class="javax.swing.JButton" binding="btnChooseMedia">
+                <constraints border-constraint="West"/>
+                <properties>
+                  <text value="..."/>
+                </properties>
+              </component>
+              <component id="7b535" class="javax.swing.JTextField" binding="tfPath">
                 <constraints border-constraint="Center"/>
+                <properties>
+                  <text value=""/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+        </children>
+      </grid>
+      <grid id="3a9b2" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <grid id="e8266" binding="pnlConnection" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
+            <constraints border-constraint="South"/>
+            <properties/>
+            <border type="etched" title="phpRecDB Website Connection"/>
+            <children>
+              <component id="a3d53" class="javax.swing.JButton" binding="btnSendToPhpRecDb">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <enabled value="false"/>
+                  <hideActionText value="false"/>
+                  <icon value="logo2.png"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="515ee" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Record URL:"/>
+                </properties>
+              </component>
+              <grid id="5bff4" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                </constraints>
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="9b565" class="javax.swing.JTable" binding="tableMediaTitles">
-                    <constraints/>
-                    <properties/>
+                  <component id="4d0ea" class="phpRecDB.helper.gui.PlaceholderTextField" binding="tfPhpRecDbUrl">
+                    <constraints border-constraint="Center"/>
+                    <properties>
+                      <placeholder value="paste PhpRecDB Record URL here"/>
+                    </properties>
+                  </component>
+                  <component id="6fedd" class="javax.swing.JButton" binding="btnConnect">
+                    <constraints border-constraint="East"/>
+                    <properties>
+                      <text value="connect"/>
+                    </properties>
+                  </component>
+                  <component id="38015" class="javax.swing.JButton" binding="btnPasteFromClipboard">
+                    <constraints border-constraint="West"/>
+                    <properties>
+                      <text value="paste from clipboard"/>
+                    </properties>
                   </component>
                 </children>
-              </scrollpane>
-              <grid id="ea59f" layout-manager="BorderLayout" hgap="0" vgap="0">
-                <constraints border-constraint="South"/>
+              </grid>
+              <component id="a88f6" class="javax.swing.JLabel" binding="lblRecordInfo">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="bd850" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Record:"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <grid id="8c53f" layout-manager="BorderLayout" hgap="0" vgap="0">
+            <constraints border-constraint="North"/>
+            <properties/>
+            <border type="etched"/>
+            <children>
+              <grid id="58a11" binding="pnlSnapshots" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="Center"/>
                 <properties/>
-                <border type="none"/>
+                <border type="etched" title="Snapshots"/>
+                <children>
+                  <scrollpane id="83601" binding="scrollbarSnapshots">
+                    <constraints border-constraint="Center"/>
+                    <properties>
+                      <horizontalScrollBarPolicy value="32"/>
+                      <preferredSize width="10" height="170"/>
+                      <verticalScrollBarPolicy value="21"/>
+                    </properties>
+                    <border type="none"/>
+                    <children>
+                      <component id="63dc3" class="javax.swing.JList" binding="listSnapshots">
+                        <constraints/>
+                        <properties>
+                          <layoutOrientation value="2"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </scrollpane>
+                  <grid id="96fa1" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
+                    <constraints border-constraint="North"/>
+                    <properties/>
+                    <border type="none"/>
+                    <children>
+                      <component id="fe87b" class="javax.swing.JButton" binding="btnSnapshot">
+                        <constraints/>
+                        <properties>
+                          <text value="snapshot"/>
+                        </properties>
+                      </component>
+                      <component id="e5211" class="javax.swing.JLabel" binding="lblHelpSnapshots">
+                        <constraints/>
+                        <properties>
+                          <text value="-?-"/>
+                        </properties>
+                      </component>
+                    </children>
+                  </grid>
+                </children>
+              </grid>
+              <grid id="ea59f" binding="pnlRecordInfo" layout-manager="BorderLayout" hgap="0" vgap="0">
+                <constraints border-constraint="West"/>
+                <properties/>
+                <border type="etched" title="Record Info"/>
                 <children>
                   <component id="e69e6" class="javax.swing.JLabel" binding="lblMediaInfo">
                     <constraints border-constraint="West"/>
@@ -136,86 +253,10 @@
                       <text value="Label"/>
                     </properties>
                   </component>
-                  <component id="fe87b" class="javax.swing.JButton" binding="btnSnapshot">
-                    <constraints border-constraint="East"/>
-                    <properties>
-                      <text value="snapshot"/>
-                    </properties>
-                  </component>
                 </children>
               </grid>
             </children>
           </grid>
-        </children>
-      </grid>
-      <grid id="e8266" binding="pnlControls" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints border-constraint="South"/>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="a3d53" class="javax.swing.JButton" binding="btnSendToPhpRecDb">
-            <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <enabled value="false"/>
-              <hideActionText value="false"/>
-              <icon value="logo2.png"/>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="515ee" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="phpRecDB Record URL:"/>
-            </properties>
-          </component>
-          <grid id="5bff4" layout-manager="BorderLayout" hgap="0" vgap="0">
-            <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="4d0ea" class="phpRecDB.helper.gui.PlaceholderTextField" binding="tfPhpRecDbUrl">
-                <constraints border-constraint="Center"/>
-                <properties>
-                  <placeholder value="paste PhpRecDB Record URL here"/>
-                </properties>
-              </component>
-              <component id="6fedd" class="javax.swing.JButton" binding="btnConnect">
-                <constraints border-constraint="East"/>
-                <properties>
-                  <text value="connect"/>
-                </properties>
-              </component>
-              <component id="38015" class="javax.swing.JButton" binding="btnPasteFromClipboard">
-                <constraints border-constraint="West"/>
-                <properties>
-                  <text value="paste from clipboard"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <component id="a88f6" class="javax.swing.JLabel" binding="lblRecordInfo">
-            <constraints>
-              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value=""/>
-            </properties>
-          </component>
-          <component id="bd850" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Record:"/>
-            </properties>
-          </component>
         </children>
       </grid>
     </children>

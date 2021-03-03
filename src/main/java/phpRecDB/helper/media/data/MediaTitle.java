@@ -1,5 +1,7 @@
 package phpRecDB.helper.media.data;
 
+import phpRecDB.helper.util.TimeUtil;
+
 import java.io.File;
 
 public class MediaTitle {
@@ -19,7 +21,8 @@ public class MediaTitle {
     @Override
     public String toString() {
 
-        return new File(medium.getPath()).getName() + ' ' + titleId;//+ TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength());
+        String time = isMenu ? "" : " (" + TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength()) + ")";
+        return new File(medium.getPath()).getName() + ' ' + titleId + time;
     }
 
     public MediaInfo getMediaInfo() {
@@ -60,7 +63,7 @@ public class MediaTitle {
     }
 
     public boolean isSelected() {
-        return !isMenu &&  selected;
+        return !isMenu && selected;
     }
 
     public void setSelected(boolean selected) {

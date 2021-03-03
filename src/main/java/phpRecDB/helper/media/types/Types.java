@@ -9,7 +9,8 @@ public class Types {
 
     static {
         types.add(new BrType());
-        types.add(new DvdType());
+        types.add(new DvdSingleLayerType());
+        types.add(new DvdDoubleLayerType());
         types.add(new VideoFileType());
     }
 
