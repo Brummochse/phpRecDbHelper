@@ -46,7 +46,6 @@ public class MediaInfo {
         this.length = length;
     }
 
-
     public static int gcd(int a, int b) {
         if (b == 0) return a;
         return gcd(b, a % b);
@@ -71,7 +70,10 @@ public class MediaInfo {
         return videoTrackInfo.width() + RESOLUTION_DIMENSIONS_SEPARATOR + videoTrackInfo.height();
     }
 
-
+    public double getFrameRate() {
+        double frameRate = (double) videoTrackInfo.frameRate() / videoTrackInfo.frameRateBase();
+        return Math.round(frameRate * 100.0) / 100.0;
+    }
 
     public String getAspectRatio() {
         if (videoTrackInfo==null || videoTrackInfo.sampleAspectRatioBase()==0  || videoTrackInfo.sampleAspectRatio()==0) {

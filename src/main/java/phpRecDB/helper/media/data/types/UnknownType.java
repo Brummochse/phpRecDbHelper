@@ -1,6 +1,4 @@
-package phpRecDB.helper.media.types;
-
-import phpRecDB.helper.util.MediaUtil;
+package phpRecDB.helper.media.data.types;
 
 import java.io.File;
 

@@ -21,7 +21,6 @@ public class MediaTitlesSummarization {
         RecordInfo recordInfo = new RecordInfo();
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
 
-
         recordInfo.setLength(getLength(selectedMediaTitles));
 
         Set<String> aspectRatios = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getAspectRatio()).collect(Collectors.toSet());
@@ -35,11 +34,18 @@ public class MediaTitlesSummarization {
             String[] resolutionDimensions = resolution.split(MediaInfo.RESOLUTION_DIMENSIONS_SEPARATOR);
             recordInfo.setWidth(Integer.parseInt(resolutionDimensions[0]));
             recordInfo.setHeight(Integer.parseInt(resolutionDimensions[1]));
+
+            recordInfo.setFormat(Format.evaluateFormat(resolution));
         }
 
         Set<String> mediaTypes = mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()).collect(Collectors.toSet());
         if (mediaTypes.size() == 1) {
             recordInfo.setType(mediaTypes.iterator().next());
+        }
+
+        Set<Double> frameRates = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getFrameRate()).collect(Collectors.toSet());
+        if (frameRates.size() == 1) {
+            recordInfo.setFrameRate(frameRates.iterator().next());
         }
 
         recordInfo.setSize(evaluateFileSize());
@@ -49,6 +55,9 @@ public class MediaTitlesSummarization {
 
         boolean hasMenu = mediaTitleTableModel.getMediaTitles().stream().anyMatch(e -> e.isMenu());
         recordInfo.setMenu(hasMenu);
+
+
+
 
         return recordInfo;
 

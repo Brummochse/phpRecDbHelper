@@ -12,17 +12,41 @@ public class RecordInfo {
     private String type = "";
     private long length = 0;
     private int mediaCount = 0;
-
+    private double frameRate =0;
+    private String format ="";
     //in bytes
     private long size = 0;
-
     //like boolean: 0=false, 1=true
     private int chapters = 0;
     //like boolean: 0=false, 1=true
     private int menu = 0;
 
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public void setChapters(int chapters) {
+        this.chapters = chapters;
+    }
+
+    public void setMenu(int menu) {
+        this.menu = menu;
+    }
+
     public int getChapters() {
         return chapters;
+    }
+
+    public double getFrameRate() {
+        return frameRate;
+    }
+
+    public void setFrameRate(double frameRate) {
+        this.frameRate = frameRate;
     }
 
     public void setChapters(boolean chapters) {
@@ -49,6 +73,12 @@ public class RecordInfo {
         }
         if (width > 0) {
             components.add("Resolution: " + width + MediaInfo.RESOLUTION_DIMENSIONS_SEPARATOR + height);
+        }
+        if (format.length()>0) {
+            components.add("Format: " + format);
+        }
+        if (frameRate > 0) {
+            components.add("Frame Rate: " + frameRate);
         }
         if (mediaCount > 0) {
             components.add("media count: " + mediaCount);
