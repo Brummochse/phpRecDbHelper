@@ -1,7 +1,11 @@
 package phpRecDB.helper.web;
 
+import phpRecDB.helper.media.data.SemioticSystem;
+
 public class Screenshot {
     private String screenshot="";
+
+    protected SemioticSystem semioticSystem= SemioticSystem.VIDEO;
 
     public Screenshot(String base64imgData) {
         screenshot=base64imgData;
@@ -15,3 +19,4 @@ public class Screenshot {
         this.screenshot = screenshot;
     }
 }
+

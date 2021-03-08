@@ -5,11 +5,11 @@ import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
+import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
-import java.awt.*;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -92,11 +92,19 @@ public class MediaInfoParser {
 
                 private boolean isMediaInfoReady() {
                     List<VideoTrackInfo> videoTrackInfos = mediaPlayer.media().info().videoTracks();
-                    //for some unknown reasons sometimes it can happen that there exist one VideoTrackInfo and some of them have no data set
-                    for (VideoTrackInfo videoTrackInfo : videoTrackInfos) {
-                        if (videoTrackInfo.width() > 0) {
-                            return true;
+                    List<AudioTrackInfo> audioTrackInfos = mediaPlayer.media().info().audioTracks();
+
+                    if (videoTrackInfos.size() > 0) {
+                        //for some unknown reasons sometimes it can happen that there exist one VideoTrackInfo and some of them have no data set
+                        for (VideoTrackInfo videoTrackInfo : videoTrackInfos) {
+                            if (videoTrackInfo.width() > 0) {
+                                return true;
+                            }
                         }
+                        return false;
+                    }
+                    if (audioTrackInfos.size() > 0) {
+                        return true;
                     }
                     return false;
                 }

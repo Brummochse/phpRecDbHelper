@@ -51,6 +51,17 @@ public class MediaInfo {
         return gcd(b, a % b);
     }
 
+    public SemioticSystem getSemioticSystem() {
+        if (videoTrackInfos.size()>0) {
+            return SemioticSystem.VIDEO;
+        }
+        if ( audioTrackInfos.size()>0) {
+            return SemioticSystem.AUDIO;
+        }
+        return SemioticSystem.UNDEFINED;
+
+    }
+
     public String getSummary() {
         String s = "";
         if (videoTrackInfos.size() > 0) {

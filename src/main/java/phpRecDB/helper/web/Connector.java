@@ -5,6 +5,7 @@ import jakarta.ws.rs.client.*;
 import jakarta.ws.rs.core.Feature;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import phpRecDB.helper.util.LogUtil;
 
@@ -38,7 +39,7 @@ public class Connector {
 
     }
 
-    public void updateRecord(String recordUrl, RecordInfo recordInfo) {
+    public void updateRecord(String recordUrl, AbstractRecord recordInfo) {
         Invocation.Builder invocationBuilder = setupUpdateRecordInvocation(recordUrl);
         Response response = invocationBuilder.put(Entity.entity(recordInfo, MediaType.APPLICATION_JSON));
     }
@@ -52,8 +53,9 @@ public class Connector {
     }
 
     public Client getClient() {
-        Feature feature = new LoggingFeature(LogUtil.logger, Level.INFO, null, null);
-        return ClientBuilder.newBuilder().register(feature).build();
+        HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic("", "");
+        Feature loggingFeature = new LoggingFeature(LogUtil.logger, Level.INFO, null, null);
+        return ClientBuilder.newBuilder().register(loggingFeature).register(authFeature).build();
     }
 
     public void addSnapshot(String recordUrl, Screenshot snapshot) {

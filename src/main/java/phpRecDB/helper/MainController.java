@@ -7,14 +7,10 @@ import phpRecDB.helper.lambdaInterface.SingleListSelectionEvent;
 import phpRecDB.helper.media.MediaPathParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
-import phpRecDB.helper.media.data.MediaTitlesSummarization;
 import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
-import phpRecDB.helper.web.Connector;
-import phpRecDB.helper.web.RecordDescription;
-import phpRecDB.helper.web.RecordInfo;
-import phpRecDB.helper.web.Screenshot;
+import phpRecDB.helper.web.*;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
@@ -35,6 +31,7 @@ public class MainController {
 
     private MainFrame mainFrame = new MainFrame();
     private MediaTitleTableModel mediaTitleTableModel;
+    private AbstractRecord record = null;
 
     private PreviewMediaPlayerController previewMediaPlayerController = new PreviewMediaPlayerController();
     private SnapshotController snapshotController;
@@ -133,9 +130,11 @@ public class MainController {
     }
 
     private void updateMediaTitlesSummary() {
-        MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
-        RecordInfo recordInfo = mediaTitlesSummarization.getRecordInfo();
-        mainFrame.getLblMediaInfo().setText(recordInfo.toString());
+        record= AbstractRecord.createRecord(mediaTitleTableModel);
+
+
+        String recordInfo =record==null? "can't evaluate semiotic system":record.toString() ;
+        mainFrame.getLblMediaInfo().setText(recordInfo);
     }
 
     private void snapshotAction() {
@@ -167,15 +166,13 @@ public class MainController {
 
     private void sendToPhpRecDb() {
         String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
-        MediaTitlesSummarization mediaTitlesSummarization = new MediaTitlesSummarization(mediaTitleTableModel);
-        RecordInfo recordInfo = mediaTitlesSummarization.getRecordInfo();
         Vector<Screenshot> snapshots = snapshotController.getSnapshots();
 
         new ProgressBarDialog((e) -> {
             e.setTitle("send record infos");
 
             Connector connector = new Connector();
-            connector.updateRecord(recordUrl, recordInfo);
+            connector.updateRecord(recordUrl, record);
 
             int progress = (int) (1.0/(snapshots.size()+1) * 100);
             System.out.println("progress: "+progress);

@@ -2,6 +2,7 @@ package phpRecDB.helper.gui;
 
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.Medium;
+import phpRecDB.helper.media.data.SemioticSystem;
 import phpRecDB.helper.util.ResourceUtil;
 
 import javax.swing.*;
@@ -20,10 +21,6 @@ public class MediaTitleTableModel extends AbstractTableModel {
     public static int COL_ICON = 1;
 
     private Vector<MediaTitle> mediaTitles = new Vector<>();
-
-    public List<MediaTitle> getSelectedMediaTitles() {
-        return mediaTitles.stream().filter(MediaTitle::isSelected).collect(Collectors.toList());
-    }
 
     @Override
     public int getRowCount() {
@@ -90,5 +87,16 @@ public class MediaTitleTableModel extends AbstractTableModel {
         return mediaTitles.stream().map(MediaTitle::getMedium).collect(Collectors.toSet());
     }
 
+    public List<MediaTitle> getSelectedMediaTitles() {
+        return mediaTitles.stream().filter(MediaTitle::isSelected).collect(Collectors.toList());
+    }
+
+    public SemioticSystem getSemioticSystem() {
+        Set<SemioticSystem> semioticSystems = getSelectedMediaTitles().stream().map(e -> e.getMediaInfo().getSemioticSystem()).collect(Collectors.toSet());
+        if (semioticSystems.size()==1) {
+            return semioticSystems.iterator().next();
+        }
+        return SemioticSystem.UNDEFINED;
+    }
 
 }
