@@ -33,7 +33,7 @@ public class ProgressBarDialog extends JDialog {
         progressBar.setBorder(border);
         content.add(progressBar, BorderLayout.NORTH);
         this.setSize(300, 100);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         addComponentListener(new ComponentAdapter() {
             public void componentShown(ComponentEvent e) {
                 executeWorker();
