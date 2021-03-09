@@ -6,11 +6,9 @@ import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.Medium;
 import phpRecDB.helper.util.LogUtil;
-import phpRecDB.helper.util.MediaUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;

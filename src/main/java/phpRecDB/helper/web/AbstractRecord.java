@@ -17,7 +17,6 @@ public abstract class AbstractRecord {
     protected SemioticSystem semioticSystem;
 
     public static AbstractRecord createRecord(MediaTitleTableModel mediaTitleTableModel) {
-        System.out.println(mediaTitleTableModel.getSemioticSystem());
         return switch (mediaTitleTableModel.getSemioticSystem()) {
             case VIDEO -> new RecordVideo(mediaTitleTableModel);
             case AUDIO -> new RecordAudio(mediaTitleTableModel);
