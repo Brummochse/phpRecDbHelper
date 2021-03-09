@@ -30,6 +30,11 @@ public class MediaInfoParser {
             e.printStackTrace();
         }
         VlcPlayer.getInstance().release();
+
+        if(!mediaPlayerThread.success) {
+            throw new RuntimeException("can't find playable media in file: "+mediaTitle.getMedium().getPath());
+        }
+
         return mediaPlayerThread.getMediaInfo();
     }
 
@@ -42,6 +47,8 @@ public class MediaInfoParser {
 
         private MediaInfo mediaInfoReturnValue;
 
+        private boolean success=false;
+
         public MediaPlayerThread(MediaTitle mediaTitle, MediaPlayer mediaPlayer) {
             this.mediaTitle = mediaTitle;
             this.mediaPlayer = mediaPlayer;
@@ -53,7 +60,19 @@ public class MediaInfoParser {
 
         @Override
         public void run() {
+
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+
+                @Override
+                public void finished(MediaPlayer mediaPlayer) {
+                    LogUtil.logger.info("catch vlc event: finished");
+                    if (isMediaInfoReady()) {
+                        readMediaInfo();
+                    } else {
+                        end(false);
+                    }
+                }
+
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
                     if (isMediaInfoReady()) {
@@ -103,10 +122,7 @@ public class MediaInfoParser {
                         }
                         return false;
                     }
-                    if (audioTrackInfos.size() > 0) {
-                        return true;
-                    }
-                    return false;
+                    return audioTrackInfos.size() > 0;
                 }
 
             });
@@ -116,11 +132,16 @@ public class MediaInfoParser {
             }
         }
 
-        public void readMediaInfo() {
+        private void readMediaInfo() {
             mediaInfoReturnValue = new MediaInfo();
             mediaInfoReturnValue.setVideoTrackInfos(mediaPlayer.media().info().videoTracks());
             mediaInfoReturnValue.setAudioTrackInfos(mediaPlayer.media().info().audioTracks());
             mediaInfoReturnValue.setLength(mediaPlayer.status().length());
+            end(true);
+        }
+
+        private void end(boolean b) {
+            success = b;
             latch.countDown();
         }
     }

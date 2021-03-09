@@ -38,7 +38,9 @@ public class MainController {
     private Credential credential=null;
 
     public static void main(String[] args) {
+
         new MainController();
+
     }
 
     public MainController() {
@@ -49,7 +51,13 @@ public class MainController {
         }
         SwingUtilities.invokeLater(this::initView);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> LogUtil.logger.log(Level.SEVERE, "Exceptoin throws", e));
+        Thread.setDefaultUncaughtExceptionHandler((t,e)->{handleException(e);});
+    }
+
+
+    public static void handleException(Throwable e) {
+        LogUtil.logger.log(Level.SEVERE, "Exception throws", e);
+        JOptionPane.showMessageDialog(null, "An Error occurred:\n\n" + e + "\n\n" + "check log for more info");
     }
 
     private void initView() {
@@ -185,7 +193,6 @@ public class MainController {
                 connector.updateRecord(recordUrl, record);
 
                 int progress = (int) (1.0 / (snapshots.size() + 1) * 100);
-                System.out.println("progress: " + progress);
 
                 e.updateValue(progress);
 
@@ -196,7 +203,6 @@ public class MainController {
                     connector.addSnapshot(recordUrl, snapshot);
 
                     progress = (int) ((i + 2.0) / (snapshots.size() + 1) * 100);
-                    System.out.println("progress: " + progress);
                     e.updateValue(progress);
                 }
             }).start();
@@ -247,6 +253,7 @@ public class MainController {
             mediaPlayer.titles().setTitle(title.getTitleId());
         }
     }
+
 
     private class PreviewMediaPlayerController {
 

@@ -46,7 +46,7 @@ public class ProgressBarDialog extends JDialog {
     }
 
     private void executeWorker() {
-        new SwingWorker<Void, Void>() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
                 executeBackgroundTask();
@@ -56,8 +56,17 @@ public class ProgressBarDialog extends JDialog {
             @Override
             protected void done() {
                 dispose();
+
+                //processes the swallowed exceptions
+                try {
+                    get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }.execute();
+        };
+
+        swingWorker.execute();
     }
 
     private void executeBackgroundTask() {

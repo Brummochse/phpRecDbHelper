@@ -16,12 +16,13 @@ public class MediaTitle {
 
     private boolean selected = true;
 
-    private MediaInfo mediaInfo;
+    private MediaInfo mediaInfo= null;
 
     @Override
     public String toString() {
 
-        String time = isMenu ? "" : " (" + TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength()) + ")";
+
+        String time = isMenu ||  mediaInfo==null ? "" : " (" + TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength()) + ")";
         return new File(medium.getPath()).getName() + ' ' + titleId + time;
     }
 
