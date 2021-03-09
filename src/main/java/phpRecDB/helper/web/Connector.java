@@ -13,6 +13,12 @@ import java.util.logging.Level;
 
 public class Connector {
 
+    private final Credential credential;
+
+    public Connector(Credential credential) {
+        this.credential=credential;
+    }
+
 
 //    public void get() {
 //
@@ -53,7 +59,7 @@ public class Connector {
     }
 
     public Client getClient() {
-        HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic("", "");
+        HttpAuthenticationFeature authFeature = HttpAuthenticationFeature.basic(credential.getUsername(), credential.getPassword());
         Feature loggingFeature = new LoggingFeature(LogUtil.logger, Level.INFO, null, null);
         return ClientBuilder.newBuilder().register(loggingFeature).register(authFeature).build();
     }

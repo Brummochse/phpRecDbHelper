@@ -35,6 +35,7 @@ public class MainController {
 
     private PreviewMediaPlayerController previewMediaPlayerController = new PreviewMediaPlayerController();
     private SnapshotController snapshotController;
+    private Credential credential=null;
 
     public static void main(String[] args) {
         new MainController();
@@ -48,9 +49,8 @@ public class MainController {
         }
         SwingUtilities.invokeLater(this::initView);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> LogUtil.logger.log(Level.SEVERE,"Exceptoin throws",e));
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> LogUtil.logger.log(Level.SEVERE, "Exceptoin throws", e));
     }
-
 
     private void initView() {
         JFrame frame = new JFrame("phpRecDB Helper");
@@ -67,7 +67,7 @@ public class MainController {
         mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
 
         mainFrame.getTableMediaTitles().setDefaultRenderer(MediaTitle.class, new MediaTitleCellRenderer());
-        mainFrame.getTableMediaTitles().addPropertyChangeListener(e->updateMediaTitlesSummary());
+        mainFrame.getTableMediaTitles().addPropertyChangeListener(e -> updateMediaTitlesSummary());
 
         mainFrame.getTableMediaTitles().getColumnModel().getColumn(0).setMaxWidth(20);
         mainFrame.getTableMediaTitles().getColumnModel().getColumn(1).setMaxWidth(20);
@@ -87,7 +87,7 @@ public class MainController {
 
         mainFrame.getSendToPhpRecDb().addActionListener(e -> sendToPhpRecDb());
 
-        mainFrame.getBtnConnect().addActionListener(e->connectToRecord());
+        mainFrame.getBtnConnect().addActionListener(e -> connectToRecord());
         mainFrame.getTfPhpRecDbUrl().addActionListener(e -> connectToRecord());
         mainFrame.getTfPhpRecDbUrl().getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
@@ -100,7 +100,19 @@ public class MainController {
                 phpRecDbUrlChanged();
             }
         });
-        mainFrame.getBtnPasteFromClipboard().addActionListener(e->pasteUrlFromClipboard());
+        mainFrame.getBtnPasteFromClipboard().addActionListener(e -> pasteUrlFromClipboard());
+    }
+
+    private Credential getCredential() {
+        if (this.credential== null) {
+            LoginDialog dialog = new LoginDialog();
+            int result = JOptionPane.showConfirmDialog(mainFrame.getPnlMain(), dialog.getPnlContent(),
+                    "Log into phpRecDB", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                credential=dialog.getCredential();
+            }
+        }
+        return credential;
     }
 
     private void phpRecDbUrlChanged() {
@@ -110,43 +122,39 @@ public class MainController {
 
     private void pasteUrlFromClipboard() {
         try {
-            String data = (String) Toolkit.getDefaultToolkit()
-                    .getSystemClipboard().getData(DataFlavor.stringFlavor);
-
+            String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
             mainFrame.getTfPhpRecDbUrl().setText(data);
-        } catch (UnsupportedFlavorException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
     }
 
     private void connectToRecord() {
-        Connector connector = new Connector();
-        String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
-        RecordDescription recordInfo = connector.getRecordInfo(recordUrl);
-        mainFrame.getLblRecordInfo().setText(recordInfo.toString());
-        mainFrame.getSendToPhpRecDb().setEnabled(true);
+        if (getCredential()!=null) {
+            Connector connector = new Connector(getCredential());
+            String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
+            RecordDescription recordInfo = connector.getRecordInfo(recordUrl);
+            mainFrame.getLblRecordInfo().setText(recordInfo.toString());
+            mainFrame.getSendToPhpRecDb().setEnabled(true);
+        }
     }
 
     private void updateMediaTitlesSummary() {
-        record= AbstractRecord.createRecord(mediaTitleTableModel);
-
-
-        String recordInfo =record==null? "can't evaluate semiotic system":record.toString() ;
+        record = AbstractRecord.createRecord(mediaTitleTableModel);
+        String recordInfo = record == null ? "can't evaluate semiotic system" : record.toString();
         mainFrame.getLblMediaInfo().setText(recordInfo);
     }
 
     private void snapshotAction() {
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
         if (selectedMediaTitles.size() == 0) {
-            JOptionPane.showMessageDialog(null, "No video titles selected.");
+            JOptionPane.showMessageDialog(mainFrame.getPnlMain(), "No video titles selected.");
             return;
         }
 
         SnapshotOptionDialog dialog = new SnapshotOptionDialog();
         if (selectedMediaTitles.stream().filter(e -> !e.isMenu()).count() > 0) { //contains non-menu videotitles, show options
-            int result = JOptionPane.showConfirmDialog(null, dialog.getPnlContent(),
+            int result = JOptionPane.showConfirmDialog(mainFrame.getPnlMain(), dialog.getPnlContent(),
                     "Snapshot Options", JOptionPane.OK_CANCEL_OPTION);
             if (result != JOptionPane.OK_OPTION) {
                 return;
@@ -155,42 +163,44 @@ public class MainController {
 
         SnapshotMaker snapshotMaker = new SnapshotMaker();
         for (MediaTitle mediaTitle : selectedMediaTitles) {
-           if (mediaTitle.isMenu()) {
-               snapshotMaker.snapshot(mediaTitle, 1, 0);
-           } else {
-               snapshotMaker.snapshot(mediaTitle, dialog.getCount(), dialog.getDelay());
-           }
+            if (mediaTitle.isMenu()) {
+                snapshotMaker.snapshot(mediaTitle, 1, 0);
+            } else {
+                snapshotMaker.snapshot(mediaTitle, dialog.getCount(), dialog.getDelay());
+            }
         }
         snapshotController.loadSnapshotThumbnailsAction();
     }
 
     private void sendToPhpRecDb() {
-        String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
-        Vector<Screenshot> snapshots = snapshotController.getSnapshots();
+        Credential credential = getCredential();
+        if (credential !=null) {
+            String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
+            Vector<Screenshot> snapshots = snapshotController.getSnapshots();
 
-        new ProgressBarDialog((e) -> {
-            e.setTitle("send record infos");
+            new ProgressBarDialog((e) -> {
+                e.setTitle("send record infos");
 
-            Connector connector = new Connector();
-            connector.updateRecord(recordUrl, record);
+                Connector connector = new Connector(credential);
+                connector.updateRecord(recordUrl, record);
 
-            int progress = (int) (1.0/(snapshots.size()+1) * 100);
-            System.out.println("progress: "+progress);
+                int progress = (int) (1.0 / (snapshots.size() + 1) * 100);
+                System.out.println("progress: " + progress);
 
-            e.updateValue(progress);
-
-            for (int i = 0; i < snapshots.size(); i++) {
-                e.setTitle("send screenshot:"+(i+1));
-
-                Screenshot snapshot = snapshots.get(i);
-                connector.addSnapshot(recordUrl, snapshot);
-
-                progress = (int) ((i+2.0)/(snapshots.size()+1) * 100);
-                System.out.println("progress: "+progress);
                 e.updateValue(progress);
-            }
-        }).start();
 
+                for (int i = 0; i < snapshots.size(); i++) {
+                    e.setTitle("send screenshot:" + (i + 1));
+
+                    Screenshot snapshot = snapshots.get(i);
+                    connector.addSnapshot(recordUrl, snapshot);
+
+                    progress = (int) ((i + 2.0) / (snapshots.size() + 1) * 100);
+                    System.out.println("progress: " + progress);
+                    e.updateValue(progress);
+                }
+            }).start();
+        }
     }
 
     private void openMediaAction() {
@@ -202,7 +212,6 @@ public class MainController {
         updateMediaTitlesSummary();
         SnapshotMaker.createNewSnapshotFolder();
     }
-
 
     private void openMediaChooserAction() {
         final JFileChooser fc = new JFileChooser();
@@ -248,9 +257,9 @@ public class MainController {
             mediaPlayer.events().addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
                 @Override
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-                if (!mediaPlayer.audio().isMute()) {
-                    mediaPlayer.audio().mute();
-                }
+                    if (!mediaPlayer.audio().isMute()) {
+                        mediaPlayer.audio().mute();
+                    }
                     MediaUtil.showMediaInfo(mediaPlayer);
                 }
 
