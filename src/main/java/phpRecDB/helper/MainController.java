@@ -94,8 +94,8 @@ public class MainController {
         snapshotController = new SnapshotController(mainFrame.getListSnapshots());
 
         mainFrame.getSendToPhpRecDb().addActionListener(e -> sendToPhpRecDb());
-
         mainFrame.getBtnConnect().addActionListener(e -> connectToRecord());
+
         mainFrame.getTfPhpRecDbUrl().addActionListener(e -> connectToRecord());
         mainFrame.getTfPhpRecDbUrl().getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {

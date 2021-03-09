@@ -9,11 +9,12 @@ import java.util.List;
 
 public class MediaInfo {
 
-    public static final String RESOLUTION_DIMENSIONS_SEPARATOR ="x";
+    public static final String RESOLUTION_DIMENSIONS_SEPARATOR = "x";
     private long length = 0;
     private VideoTrackInfo videoTrackInfo = null;
     private List<VideoTrackInfo> videoTrackInfos = new ArrayList<>();
     private List<AudioTrackInfo> audioTrackInfos = new ArrayList<>();
+    private int chapterCount = 0;
 
     public List<VideoTrackInfo> getVideoTrackInfos() {
         return videoTrackInfos;
@@ -52,10 +53,10 @@ public class MediaInfo {
     }
 
     public SemioticSystem getSemioticSystem() {
-        if (videoTrackInfos.size()>0) {
+        if (videoTrackInfos.size() > 0) {
             return SemioticSystem.VIDEO;
         }
-        if ( audioTrackInfos.size()>0) {
+        if (audioTrackInfos.size() > 0) {
             return SemioticSystem.AUDIO;
         }
         return SemioticSystem.UNDEFINED;
@@ -75,7 +76,7 @@ public class MediaInfo {
     }
 
     public String getResolution() {
-        if (videoTrackInfo==null) {
+        if (videoTrackInfo == null) {
             return "";
         }
         return videoTrackInfo.width() + RESOLUTION_DIMENSIONS_SEPARATOR + videoTrackInfo.height();
@@ -87,7 +88,7 @@ public class MediaInfo {
     }
 
     public String getAspectRatio() {
-        if (videoTrackInfo==null || videoTrackInfo.sampleAspectRatioBase()==0  || videoTrackInfo.sampleAspectRatio()==0) {
+        if (videoTrackInfo == null || videoTrackInfo.sampleAspectRatioBase() == 0 || videoTrackInfo.sampleAspectRatio() == 0) {
             return "";
         }
 
@@ -100,5 +101,13 @@ public class MediaInfo {
         arHeight = arHeight / gcd;
 
         return arWith + ":" + arHeight;
+    }
+
+    public void setChapterCount(int chapterCount) {
+        this.chapterCount = chapterCount;
+    }
+
+    public boolean hasChapters() {
+        return chapterCount > 1;
     }
 }

@@ -4,7 +4,6 @@ import phpRecDB.helper.VlcPlayer;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.LogUtil;
-import phpRecDB.helper.util.MediaUtil;
 import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
@@ -77,7 +76,6 @@ public class MediaInfoParser {
                 public void mediaPlayerReady(MediaPlayer mediaPlayer) {
                     if (isMediaInfoReady()) {
                         LogUtil.logger.info("catch vlc event: mediaPlayerReady");
-                        MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
                 }
@@ -86,7 +84,6 @@ public class MediaInfoParser {
                 public void playing(MediaPlayer mediaPlayer) {
                     if (isMediaInfoReady()) {
                         LogUtil.logger.info("catch vlc event: playing");
-                        MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
                 }
@@ -95,7 +92,6 @@ public class MediaInfoParser {
                 public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
                     if (isMediaInfoReady()) {
                         LogUtil.logger.info("catch vlc event: positionChanged");
-                        MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
                 }
@@ -104,7 +100,6 @@ public class MediaInfoParser {
                 public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
                     if (isMediaInfoReady()) {
                         LogUtil.logger.info("catch vlc event: videoOutput");
-                        MediaUtil.showMediaInfo(mediaPlayer);
                         readMediaInfo();
                     }
                 }
@@ -136,6 +131,7 @@ public class MediaInfoParser {
             mediaInfoReturnValue = new MediaInfo();
             mediaInfoReturnValue.setVideoTrackInfos(mediaPlayer.media().info().videoTracks());
             mediaInfoReturnValue.setAudioTrackInfos(mediaPlayer.media().info().audioTracks());
+            mediaInfoReturnValue.setChapterCount(mediaPlayer.chapters().count());
             mediaInfoReturnValue.setLength(mediaPlayer.status().length());
             end(true);
         }

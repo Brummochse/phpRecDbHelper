@@ -61,9 +61,10 @@ public class RecordVideo extends AbstractRecord {
 
         boolean hasMenu = mediaTitleTableModel.getMediaTitles().stream().anyMatch(e -> e.isMenu());
         this.setMenu(hasMenu);
+
+        boolean hasChapters = selectedMediaTitles.stream().anyMatch(e -> e.getMediaInfo().hasChapters());
+        this.setChapters(hasChapters);
     }
-
-
 
     public String getFormat() {
         return format;
@@ -71,10 +72,6 @@ public class RecordVideo extends AbstractRecord {
 
     public void setFormat(String format) {
         this.format = format;
-    }
-
-    public void setChapters(int chapters) {
-        this.chapters = chapters;
     }
 
     public void setMenu(int menu) {
@@ -125,6 +122,7 @@ public class RecordVideo extends AbstractRecord {
         }
 
         components.add("menu: " + (menu==1?"yes":"no"));
+        components.add("chapters: " + (chapters==1?"yes":"no"));
 
         return components;
     }
