@@ -44,6 +44,7 @@ public class MainController {
     }
 
     public MainController() {
+
         VlcLibLoader vlcLibLoader = new VlcLibLoader();
         if (!vlcLibLoader.isVlcLibAvailable()) {
             JOptionPane.showMessageDialog(null, "No suitable VLC installation could be found. Please restart this application.", "Error", JOptionPane.ERROR_MESSAGE);

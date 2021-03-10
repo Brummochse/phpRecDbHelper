@@ -4,6 +4,7 @@ public class Credential {
 
     private String username;
     private String password;
+    private boolean ignoreSsl=false;
 
     public String getUsername() {
         return username;
@@ -19,5 +20,13 @@ public class Credential {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isIgnoreSsl() {
+        return ignoreSsl;
+    }
+
+    public void setIgnoreSsl(boolean ignoreSsl) {
+        this.ignoreSsl = ignoreSsl;
     }
 }
