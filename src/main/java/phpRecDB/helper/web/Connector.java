@@ -8,6 +8,9 @@ import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.logging.LoggingFeature;
 import phpRecDB.helper.util.LogUtil;
+import phpRecDB.helper.web.transfer.AbstractRecord;
+import phpRecDB.helper.web.transfer.RecordDescription;
+import phpRecDB.helper.web.transfer.Screenshot;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -39,7 +42,7 @@ public class Connector {
 //
 //    }
 
-    public RecordDescription getRecordInfo(String recordUrl) {
+    public RecordDescription getRecordDescription(String recordUrl) {
         PhpRecDbRecordUrl phpRecDbRecordUrl = new PhpRecDbRecordUrl(recordUrl);
 
         WebTarget webTarget = getClient().target(phpRecDbRecordUrl.getApiUrl() + "{id}")

@@ -1,9 +1,10 @@
-package phpRecDB.helper.web;
+package phpRecDB.helper.web.transfer;
 
 public class RecordDescription {
     private String recordDescription;
     private String concertDescription;
     private String artist;
+    private String semioticSystem;
 
     public String getConcertDescription() {
         return concertDescription;
@@ -29,9 +30,16 @@ public class RecordDescription {
         this.artist = artist;
     }
 
+    public String getSemioticSystem() {
+        return semioticSystem;
+    }
+
+    public void setSemioticSystem(String semioticSystem) {
+        this.semioticSystem = semioticSystem;
+    }
 
     @Override
     public String toString() {
-        return "<html>"+artist+"<br>"+concertDescription+"<br>"+recordDescription+"</html>";
+        return "<html>"+artist+"<br>"+concertDescription+"<br>"+recordDescription+"<br>"+semioticSystem.toUpperCase()+"</html>";
     }
 }

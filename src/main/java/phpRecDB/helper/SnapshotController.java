@@ -7,7 +7,8 @@ import phpRecDB.helper.gui.ThumbnailListRenderer;
 import phpRecDB.helper.lambdaInterface.KeyPressedListener;
 import phpRecDB.helper.lambdaInterface.MouseDoubleClickedListener;
 import phpRecDB.helper.media.SnapshotMaker;
-import phpRecDB.helper.web.Screenshot;
+import phpRecDB.helper.media.data.MediaTitle;
+import phpRecDB.helper.web.transfer.Screenshot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,6 +34,21 @@ public class SnapshotController {
 
     public void clear() {
         snapshotThumbnailListModel.clear();
+    }
+
+    public void createSnapshots(List<MediaTitle> selectedMediaTitles, int count, long delay) {
+        if (SnapshotMaker.getSnapshotFolder()==null) {
+            SnapshotMaker.createNewSnapshotFolder();
+        }
+
+        for (MediaTitle mediaTitle : selectedMediaTitles) {
+            if (mediaTitle.isMenu()) {
+                SnapshotMaker.snapshot(mediaTitle, 1, 0);
+            } else {
+                SnapshotMaker.snapshot(mediaTitle, count, delay);
+            }
+        }
+        loadSnapshotThumbnailsAction();
     }
 
     public Vector<Screenshot> getSnapshots() {
@@ -109,6 +125,7 @@ public class SnapshotController {
             }
         }).start();
     }
+
 
 }
 

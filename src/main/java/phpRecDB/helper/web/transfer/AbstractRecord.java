@@ -1,4 +1,4 @@
-package phpRecDB.helper.web;
+package phpRecDB.helper.web.transfer;
 
 import phpRecDB.helper.gui.MediaTitleTableModel;
 import phpRecDB.helper.media.data.*;
@@ -75,11 +75,16 @@ public abstract class AbstractRecord {
         this.mediaCount = mediaCount;
     }
 
+    public SemioticSystem getSemioticSystem() {
+        return semioticSystem;
+    }
+
     public abstract Vector<String> getToStringComponents();
-        @Override
+
+    @Override
     public String toString() {
         Vector<String> components = new Vector<>();
-            components.add("Semiotic System: " + semioticSystem.name());
+        components.add("Semiotic System: " + semioticSystem.name());
         components.add("Length: " + TimeUtil.convertMillisecondsToTimeStr(length));
         if (getMediaCount() > 0) {
             components.add("media count: " + mediaCount);

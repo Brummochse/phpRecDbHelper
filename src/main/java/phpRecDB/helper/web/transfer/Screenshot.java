@@ -1,4 +1,4 @@
-package phpRecDB.helper.web;
+package phpRecDB.helper.web.transfer;
 
 import phpRecDB.helper.media.data.SemioticSystem;
 
