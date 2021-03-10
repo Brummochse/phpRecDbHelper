@@ -95,6 +95,10 @@ public class MediaInfo {
         int arWith = videoTrackInfo.width() / videoTrackInfo.sampleAspectRatioBase();
         int arHeight = videoTrackInfo.height() / videoTrackInfo.sampleAspectRatio();
 
+        if (arWith==0 || arHeight==0) {
+            return "";
+        }
+
         int gcd = gcd(arWith, arHeight);
 
         arWith = arWith / gcd;

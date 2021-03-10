@@ -31,6 +31,10 @@ public class SnapshotController {
         initView();
     }
 
+    public void clear() {
+        snapshotThumbnailListModel.clear();
+    }
+
     public Vector<Screenshot> getSnapshots() {
         Vector<Screenshot> screenshots = new Vector<>();
         for (SnapshotThumbnail snapshot : Collections.list(snapshotThumbnailListModel.elements())) {

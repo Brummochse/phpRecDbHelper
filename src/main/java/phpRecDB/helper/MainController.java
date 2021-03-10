@@ -32,7 +32,6 @@ public class MainController {
     private MainFrame mainFrame = new MainFrame();
     private MediaTitleTableModel mediaTitleTableModel;
     private AbstractRecord record = null;
-
     private PreviewMediaPlayerController previewMediaPlayerController = new PreviewMediaPlayerController();
     private SnapshotController snapshotController;
     private Credential credential=null;
@@ -54,7 +53,6 @@ public class MainController {
 
         Thread.setDefaultUncaughtExceptionHandler((t,e)->{handleException(e);});
     }
-
 
     public static void handleException(Throwable e) {
         LogUtil.logger.log(Level.SEVERE, "Exception throws", e);
@@ -170,12 +168,15 @@ public class MainController {
             }
         }
 
-        SnapshotMaker snapshotMaker = new SnapshotMaker();
+        if (SnapshotMaker.getSnapshotFolder()==null) {
+            SnapshotMaker.createNewSnapshotFolder();
+        }
+
         for (MediaTitle mediaTitle : selectedMediaTitles) {
             if (mediaTitle.isMenu()) {
-                snapshotMaker.snapshot(mediaTitle, 1, 0);
+                SnapshotMaker.snapshot(mediaTitle, 1, 0);
             } else {
-                snapshotMaker.snapshot(mediaTitle, dialog.getCount(), dialog.getDelay());
+                SnapshotMaker.snapshot(mediaTitle, dialog.getCount(), dialog.getDelay());
             }
         }
         snapshotController.loadSnapshotThumbnailsAction();
@@ -212,12 +213,14 @@ public class MainController {
 
     private void openMediaAction() {
         mainFrame.resetUi();
+        snapshotController.clear();
+        SnapshotMaker.reset();
+
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
         MediaPathParser parser = new MediaPathParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
         mediaTitleTableModel.setMediaTitles(titles);
         updateMediaTitlesSummary();
-        SnapshotMaker.createNewSnapshotFolder();
     }
 
     private void openMediaChooserAction() {

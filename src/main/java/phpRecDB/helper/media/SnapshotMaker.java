@@ -12,10 +12,14 @@ import java.io.File;
 
 public class SnapshotMaker {
 
-    private static File snapshotFolder;
+    private static File snapshotFolder=null;
 
     public static File getSnapshotFolder() {
         return snapshotFolder;
+    }
+
+    public static void reset()  {
+        snapshotFolder=null;
     }
 
     private static File ensureExistingSnapshotFolder() {
@@ -48,7 +52,7 @@ public class SnapshotMaker {
         SnapshotMaker.snapshotFolder = newSnapshotFolder;
     }
 
-    public void snapshot(MediaTitle title, int count, long snapshotAfterSkipDelay) {
+    public static void snapshot(MediaTitle title, int count, long snapshotAfterSkipDelay) {
         LogUtil.logger.info("snapshotting " + title.getMedium().getPath() + " title " + title.getTitleId() + " (count:" + count + ", delay:" + snapshotAfterSkipDelay + ")");
         new ProgressBarDialog((e) -> {
             MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
@@ -83,7 +87,7 @@ public class SnapshotMaker {
         }).start();
     }
 
-    private String getFileName(MediaTitle title, long time) {
+    private static String getFileName(MediaTitle title, long time) {
         String timeStr = TimeUtil.convertMillisecondsToTimeStr(time);
         String fileName = title.toString() + " " + timeStr + ".jpg";
         fileName = fileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
