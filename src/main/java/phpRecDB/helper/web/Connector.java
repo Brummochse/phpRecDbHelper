@@ -48,7 +48,6 @@ public class Connector {
         Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
 
         return invocationBuilder.get(RecordDescription.class);
-
     }
 
     public void updateRecord(String recordUrl, AbstractRecord recordInfo) {
