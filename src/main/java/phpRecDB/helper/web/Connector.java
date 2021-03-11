@@ -53,9 +53,10 @@ public class Connector {
         return invocationBuilder.get(RecordDescription.class);
     }
 
-    public void updateRecord(String recordUrl, AbstractRecord recordInfo) {
+    public String updateRecord(String recordUrl, AbstractRecord recordInfo) {
         Invocation.Builder invocationBuilder = setupUpdateRecordInvocation(recordUrl);
         Response response = invocationBuilder.put(Entity.entity(recordInfo, MediaType.APPLICATION_JSON));
+        return response.readEntity(String.class);
     }
 
     public Invocation.Builder setupUpdateRecordInvocation(String recordUrl) {
@@ -96,8 +97,9 @@ public class Connector {
         return clientBuilder.build();
     }
 
-    public void addSnapshot(String recordUrl, Screenshot snapshot) {
+    public String addSnapshot(String recordUrl, Screenshot snapshot) {
         Invocation.Builder invocationBuilder = setupUpdateRecordInvocation(recordUrl);
         Response response = invocationBuilder.put(Entity.entity(snapshot, MediaType.APPLICATION_JSON));
+        return response.readEntity(String.class);
     }
 }

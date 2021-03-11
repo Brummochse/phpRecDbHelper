@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 
 public class MainController {
@@ -188,11 +189,13 @@ public class MainController {
             String recordUrl = mainFrame.getTfPhpRecDbUrl().getText();
             Vector<Screenshot> snapshots = snapshotController.getSnapshots();
 
+            Vector<String> responses = new Vector<>();
+
             new ProgressBarDialog((e) -> {
                 e.setTitle("send record infos");
 
                 Connector connector = new Connector(credential);
-                connector.updateRecord(recordUrl, recordToSend);
+                responses.add(connector.updateRecord(recordUrl, recordToSend));
 
                 int progress = (int) (1.0 / (snapshots.size() + 1) * 100);
 
@@ -202,12 +205,16 @@ public class MainController {
                     e.setTitle("send screenshot:" + (i + 1));
 
                     Screenshot snapshot = snapshots.get(i);
-                    connector.addSnapshot(recordUrl, snapshot);
+                    responses.add(connector.addSnapshot(recordUrl, snapshot));
 
                     progress = (int) ((i + 2.0) / (snapshots.size() + 1) * 100);
                     e.updateValue(progress);
                 }
             }).start();
+
+            List<String> collect = responses.stream().map(e -> e.replaceAll("\\r|\\n", "")).collect(Collectors.toList());
+            String join = String.join("\r\n", collect);
+            JOptionPane.showMessageDialog(mainFrame.getPnlMain(), join);
         }
     }
 
