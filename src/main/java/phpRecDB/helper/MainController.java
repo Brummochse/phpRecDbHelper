@@ -215,6 +215,7 @@ public class MainController {
             List<String> collect = responses.stream().map(e -> e.replaceAll("\\r|\\n", "")).collect(Collectors.toList());
             String join = String.join("\r\n", collect);
             JOptionPane.showMessageDialog(mainFrame.getPnlMain(), join);
+            connectToRecord();
         }
     }
 
