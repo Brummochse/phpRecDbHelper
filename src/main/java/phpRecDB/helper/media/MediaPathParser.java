@@ -5,10 +5,13 @@ import phpRecDB.helper.gui.ProgressBarDialog;
 import phpRecDB.helper.media.data.MediaInfo;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.media.data.Medium;
+import phpRecDB.helper.media.data.types.FileInputHandler;
+import phpRecDB.helper.media.data.types.FileInputHandlers;
 import phpRecDB.helper.util.LogUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -22,8 +25,10 @@ public class MediaPathParser {
             MediaInfoParser mediaInfoParser = new MediaInfoParser();
 
             for (int j = 0; j < paths.length; j++) {
-                Medium medium = new Medium(paths[j]);
-                String vlcInputPath=medium.getVlcInputString();
+                String path = paths[j];
+                Medium medium = new Medium(path);
+                FileInputHandler fileInputType = FileInputHandlers.evaluateType(new File(path));
+                String vlcInputPath=fileInputType.getVlcInputString(path);
 
                 LogUtil.logger.info("start loading medium: "+ vlcInputPath);
                 List<TitleDescription> titleDescriptions = getTitleDescriptions(vlcInputPath);
@@ -61,6 +66,9 @@ public class MediaPathParser {
                         e.updateValue(progress);
                     }
                 }
+                String typeName = fileInputType.evaluateMediaType(titles.lastElement());
+
+                medium.setType(typeName);
 
             }
         }).start();

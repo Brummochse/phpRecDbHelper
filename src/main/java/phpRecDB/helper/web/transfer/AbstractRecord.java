@@ -14,6 +14,7 @@ public abstract class AbstractRecord {
     //in bytes
     protected long size = 0;
     protected int mediaCount = 0;
+    private String type = "";
     protected SemioticSystem semioticSystem;
 
     public static AbstractRecord createRecord(MediaTitleTableModel mediaTitleTableModel) {
@@ -30,6 +31,10 @@ public abstract class AbstractRecord {
         this.setSize(evaluateFileSize(mediaTitleTableModel));
         Set<Medium> selectedMedia = selectedMediaTitles.stream().map(MediaTitle::getMedium).collect(Collectors.toSet());
         this.setMediaCount(selectedMedia.size());
+        Set<String> mediaTypes = selectedMediaTitles.stream().map(e -> e.getMedium().getType()).collect(Collectors.toSet());
+        if (mediaTypes.size() == 1) {
+            this.setType(mediaTypes.iterator().next());
+        }
     }
 
     private long evaluateFileSize(MediaTitleTableModel mediaTitleTableModel) {
@@ -75,6 +80,15 @@ public abstract class AbstractRecord {
         this.mediaCount = mediaCount;
     }
 
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public SemioticSystem getSemioticSystem() {
         return semioticSystem;
     }
@@ -85,6 +99,9 @@ public abstract class AbstractRecord {
     public String toString() {
         Vector<String> components = new Vector<>();
         components.add("Semiotic System: " + semioticSystem.name());
+        if (type.length() > 0) {
+            components.add("Type: " + type);
+        }
         components.add("Length: " + TimeUtil.convertMillisecondsToTimeStr(length));
         if (getMediaCount() > 0) {
             components.add("media count: " + mediaCount);

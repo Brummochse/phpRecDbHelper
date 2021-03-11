@@ -2,8 +2,6 @@ package phpRecDB.helper.media.data;
 
 import phpRecDB.helper.util.TimeUtil;
 
-import java.io.File;
-
 public class MediaTitle {
 
     private int titleId = -1;
@@ -23,7 +21,7 @@ public class MediaTitle {
 
 
         String time = isMenu ||  mediaInfo==null ? "" : " (" + TimeUtil.convertMillisecondsToTimeStr(mediaInfo.getLength()) + ")";
-        return new File(medium.getPath()).getName() + ' ' + titleId + time;
+        return medium.getPath().getName() + ' ' + titleId + time;
     }
 
     public MediaInfo getMediaInfo() {

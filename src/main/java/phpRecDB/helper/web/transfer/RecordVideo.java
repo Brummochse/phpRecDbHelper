@@ -12,7 +12,6 @@ public class RecordVideo extends AbstractRecord {
     private String aspectRatio = "";
     private int width = 0;
     private int height = 0;
-    private String type = "";
     private double frameRate =0;
     private String format ="";
     //like boolean: 0=false, 1=true
@@ -25,10 +24,6 @@ public class RecordVideo extends AbstractRecord {
         this.semioticSystem= SemioticSystem.VIDEO;
         initialiseBaseAttributes(mediaTitleTableModel);
         initialiseSemioticSpecificAttributes(mediaTitleTableModel);
-    }
-
-    public RecordVideo() {
-        this.semioticSystem= SemioticSystem.VIDEO;
     }
 
     private void initialiseSemioticSpecificAttributes(MediaTitleTableModel mediaTitleTableModel) {
@@ -47,11 +42,6 @@ public class RecordVideo extends AbstractRecord {
             this.setHeight(Integer.parseInt(resolutionDimensions[1]));
 
             this.setFormat(Format.evaluateFormat(resolution));
-        }
-
-        Set<String> mediaTypes = mediaTitleTableModel.getMediums().stream().map(e -> e.getType().getName()).collect(Collectors.toSet());
-        if (mediaTypes.size() == 1) {
-            this.setType(mediaTypes.iterator().next());
         }
 
         Set<Double> frameRates = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getFrameRate()).collect(Collectors.toSet());
@@ -108,9 +98,6 @@ public class RecordVideo extends AbstractRecord {
         if (aspectRatio.length() > 0) {
             components.add("Aspect Ratio: " + aspectRatio);
         }
-        if (type.length() > 0) {
-            components.add("Type: " + type);
-        }
         if (width > 0) {
             components.add("Resolution: " + width + MediaInfo.RESOLUTION_DIMENSIONS_SEPARATOR + height);
         }
@@ -151,13 +138,6 @@ public class RecordVideo extends AbstractRecord {
         this.height = height;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 
 
 }

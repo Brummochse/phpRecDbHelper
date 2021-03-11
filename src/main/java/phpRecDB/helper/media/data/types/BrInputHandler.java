@@ -1,17 +1,18 @@
 package phpRecDB.helper.media.data.types;
 
+import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.MediaUtil;
 
 import java.io.File;
 
-public class BrType extends Type{
+public class BrInputHandler extends FileInputHandler {
     @Override
     public String getResourceIconIdentifier() {
         return "bluray.png";
     }
 
     @Override
-    public String getName() {
+    public String evaluateMediaType(MediaTitle mediaTitle) {
         return "BRD";
     }
 
