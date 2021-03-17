@@ -28,10 +28,10 @@ public class MediaPathParser {
                 String path = paths[j];
                 Medium medium = new Medium(path);
                 FileInputHandler fileInputType = FileInputHandlers.evaluateType(new File(path));
-                String vlcInputPath=fileInputType.getVlcInputString(path);
 
-                LogUtil.logger.info("start loading medium: "+ vlcInputPath);
-                List<TitleDescription> titleDescriptions = getTitleDescriptions(vlcInputPath);
+
+                LogUtil.logger.info("start loading medium: "+ path);
+                List<TitleDescription> titleDescriptions = getTitleDescriptions(fileInputType,path);
 
                 if (titleDescriptions.size() == 0) { //medium without title separation -> only one media title
                     MediaTitle title = new MediaTitle();
@@ -76,10 +76,13 @@ public class MediaPathParser {
         return titles;
     }
 
-    private List<TitleDescription> getTitleDescriptions(String path) {
+    private List<TitleDescription> getTitleDescriptions(FileInputHandler fileInputHandler, String path) {
+        String vlcInputPath=fileInputHandler.getVlcInputString(path);
         MediaPlayer mediaPlayer = VlcPlayer.getInstance().getNewMediaPlayerAccess();
-        mediaPlayer.media().start(path);
+        mediaPlayer.media().start(vlcInputPath);
         List<TitleDescription> titleDescriptions = mediaPlayer.titles().titleDescriptions();
+        fileInputHandler.postProcessReadTitles(titleDescriptions,path);
+
         VlcPlayer.getInstance().release();
         return titleDescriptions;
     }

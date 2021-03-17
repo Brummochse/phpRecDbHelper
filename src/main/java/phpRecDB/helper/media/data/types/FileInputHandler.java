@@ -2,9 +2,11 @@ package phpRecDB.helper.media.data.types;
 
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.ResourceUtil;
+import uk.co.caprica.vlcj.player.base.TitleDescription;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.List;
 
 public abstract class FileInputHandler {
 
@@ -31,4 +33,6 @@ public abstract class FileInputHandler {
     }
 
 
+    public void postProcessReadTitles(List<TitleDescription> titleDescriptions, String path) {
+    }
 }
