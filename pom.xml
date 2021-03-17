@@ -6,15 +6,13 @@
 
     <groupId>de.phpRecDb</groupId>
     <artifactId>phpRecDbHelper</artifactId>
-    <version>1-TEST</version>
+    <version>2-TEST</version>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
-                <configuration>
-                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -37,11 +35,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>15</source>
+                    <target>15</target>
                 </configuration>
             </plugin>
+
+<!--    if exported jar does not start see here:  https://stackoverflow.com/questions/19049253/intellij-idea-gui-designer-maven -->
 
         </plugins>
     </build>

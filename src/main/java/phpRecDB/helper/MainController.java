@@ -65,7 +65,7 @@ public class MainController {
     }
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper");
+        JFrame frame = new JFrame("phpRecDB Helper (Version 1) www.phpRecDB.com");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -74,6 +74,7 @@ public class MainController {
 
         VlcPlayer.getInstance().setVlcPanel(mainFrame.getPnlVlc());
         mainFrame.resetUi();
+
 
         mediaTitleTableModel = new MediaTitleTableModel();
         mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
