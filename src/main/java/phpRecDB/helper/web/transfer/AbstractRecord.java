@@ -14,6 +14,7 @@ public abstract class AbstractRecord {
     //in bytes
     protected long size = 0;
     protected int mediaCount = 0;
+    protected String codec = "";
     private String type = "";
     protected SemioticSystem semioticSystem;
 
@@ -35,6 +36,19 @@ public abstract class AbstractRecord {
         if (mediaTypes.size() == 1) {
             this.setType(mediaTypes.iterator().next());
         }
+
+        Set<String> codecs = selectedMediaTitles.stream().map(e -> e.getMediaInfo().getCodec()).collect(Collectors.toSet());
+        if (codecs.size() == 1) {
+            this.setCodec(codecs.iterator().next());
+        }
+    }
+
+    public String getCodec() {
+        return codec;
+    }
+
+    public void setCodec(String codec) {
+        this.codec = codec;
     }
 
     private long evaluateFileSize(MediaTitleTableModel mediaTitleTableModel) {
@@ -101,6 +115,9 @@ public abstract class AbstractRecord {
         components.add("Semiotic System: " + semioticSystem.name());
         if (type.length() > 0) {
             components.add("Type: " + type);
+        }
+        if (codec.length() > 0) {
+            components.add("Codec: " + codec);
         }
         components.add("Length: " + TimeUtil.convertMillisecondsToTimeStr(length));
         if (getMediaCount() > 0) {
