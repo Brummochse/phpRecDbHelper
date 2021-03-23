@@ -7,6 +7,7 @@ import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
@@ -40,7 +41,7 @@ public class DvdInputHandler extends FileInputHandler {
      * it seems that some standalone DVD Records create corrupted DVD title structures
      * These problematic DVDs define multiple Titles starting at the same startSector.
      * This results in multiple title selections which all playing the same video.
-     *
+     * <p>
      * This method checks is some of these titles exist with same start sector and keeps
      * only the title with the longest length and remove all other redundant title definitions
      *
@@ -51,8 +52,7 @@ public class DvdInputHandler extends FileInputHandler {
         long titlesVlcWithoutMenuCount = titlesVlc.stream().filter(e -> !e.isMenu()).count();
         List<DvdParser.Title> titlesIfo = getTitlesFromIfo(path);
 
-        if (titlesVlcWithoutMenuCount == titlesIfo.size())
-        {
+        if (titlesVlcWithoutMenuCount == titlesIfo.size()) {
             //group titles by same start sector
             HashMap<Long, LinkedList<DvdParser.Title>> dvdIfoTitlesByStartSector = new HashMap<>();
             for (DvdParser.Title dvdTitle : titlesIfo) {
@@ -63,28 +63,39 @@ public class DvdInputHandler extends FileInputHandler {
                 dvdIfoTitlesByStartSector.get(vtsStartSector).add(dvdTitle);
             }
             //collect list with corrupted titles to remove
-            List<Byte> corruptTitlesToRemoveIds=new LinkedList<>();
+            List<Byte> corruptTitlesToRemoveIds = new LinkedList<>();
             for (long startSector : dvdIfoTitlesByStartSector.keySet()) {
                 LinkedList<DvdParser.Title> titlesPerStartSector = dvdIfoTitlesByStartSector.get(startSector);
                 if (titlesPerStartSector.size() <= 1) {
                     continue;
                 }
-                LogUtil.logger.warning("corrupt dvd structure detected. found "+titlesPerStartSector.size()+ " titles at start sector "+ startSector);
+                LogUtil.logger.warning("corrupt dvd structure detected. found " + titlesPerStartSector.size() + " titles at start sector " + startSector);
                 titlesPerStartSector.sort(Comparator.comparing(DvdParser.Title::getPlaybackTime));
                 while (titlesPerStartSector.size() > 1) {
                     DvdParser.Title titleToRemove = titlesPerStartSector.removeFirst();
                     corruptTitlesToRemoveIds.add(titleToRemove.getTitleInfo().getTitleNumberWithinVTS());
                 }
             }
-            //sort in descending order
-            corruptTitlesToRemoveIds.sort(Byte::compare);
-            Collections.reverse(corruptTitlesToRemoveIds);
-            // remove corrupted vlc titles
-            int titlesVlcCount = titlesVlc.size();
-            for (Byte corruptTitleId : corruptTitlesToRemoveIds) {
-                LogUtil.logger.warning("remove corrupted title with id "+corruptTitleId);
-                int vlcjTitleId= titlesVlcCount -titlesIfo.size()+corruptTitleId -1;
-                titlesVlc.remove(vlcjTitleId);
+            if (corruptTitlesToRemoveIds.size() > 0) {
+
+                String msg="The DVD structure is corrupted: multiple titles with the same start sector found.\n\nKeep only longest and remove other titles.";
+
+                int result = JOptionPane.showConfirmDialog(null, msg, "Corrupted DVD Structure!",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+
+                    //sort in descending order
+                    corruptTitlesToRemoveIds.sort(Byte::compare);
+                    Collections.reverse(corruptTitlesToRemoveIds);
+                    // remove corrupted vlc titles
+                    int titlesVlcCount = titlesVlc.size();
+                    for (Byte corruptTitleId : corruptTitlesToRemoveIds) {
+                        LogUtil.logger.warning("remove corrupted title with id " + corruptTitleId);
+                        int vlcjTitleId = titlesVlcCount - titlesIfo.size() + corruptTitleId - 1;
+                        titlesVlc.remove(vlcjTitleId);
+                    }
+                }
             }
         }
     }
