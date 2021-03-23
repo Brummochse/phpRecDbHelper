@@ -5,6 +5,7 @@ import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class MediaInfo {
@@ -73,6 +74,17 @@ public class MediaInfo {
             s += "Length: " + TimeUtil.convertMillisecondsToTimeStr(length);
         }
         return s;
+    }
+
+    public String getCodec() {
+        List<String> trackCodecs=new LinkedList<>();
+        if (videoTrackInfo != null) {
+            trackCodecs.add(videoTrackInfo.codecDescription());
+        }
+        for (AudioTrackInfo audioTrackInfo : audioTrackInfos) {
+            trackCodecs.add(audioTrackInfo.codecDescription());
+        }
+        return String.join(" | ", trackCodecs);
     }
 
     public String getResolution() {
