@@ -91,6 +91,10 @@ public class MediaTitleTableModel extends AbstractTableModel {
         return mediaTitles.stream().filter(MediaTitle::isSelected).collect(Collectors.toList());
     }
 
+    public List<MediaTitle> getMenuTitles() {
+        return mediaTitles.stream().filter(MediaTitle::isMenu).collect(Collectors.toList());
+    }
+
     public SemioticSystem getSemioticSystem() {
         Set<SemioticSystem> semioticSystems = getSelectedMediaTitles().stream().map(e -> e.getMediaInfo().getSemioticSystem()).collect(Collectors.toSet());
         if (semioticSystems.size()==1) {

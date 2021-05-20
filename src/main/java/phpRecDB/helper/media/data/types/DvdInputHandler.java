@@ -78,11 +78,11 @@ public class DvdInputHandler extends FileInputHandler {
             }
             if (corruptTitlesToRemoveIds.size() > 0) {
 
-                String msg="The DVD structure is corrupted: multiple titles with the same start sector found.\n\nKeep only longest and remove other titles.";
+                String msg="The DVD structure is corrupted: multiple titles with the same start sector found.\n\nKeep only longest and remove other titles?";
 
                 int result = JOptionPane.showConfirmDialog(null, msg, "Corrupted DVD Structure!",
                         JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE);
+                        JOptionPane.ERROR_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
 
                     //sort in descending order

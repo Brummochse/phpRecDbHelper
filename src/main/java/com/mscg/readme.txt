@@ -1,0 +1,1 @@
+I do not really know when or where I found this DVD Ifo parser package. Proper respect goes out to the unknown author!

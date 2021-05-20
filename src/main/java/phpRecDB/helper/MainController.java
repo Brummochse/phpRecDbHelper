@@ -4,13 +4,15 @@ package phpRecDB.helper;
 import phpRecDB.helper.gui.*;
 import phpRecDB.helper.lambdaInterface.MouseDraggedListener;
 import phpRecDB.helper.lambdaInterface.SingleListSelectionEvent;
+import phpRecDB.helper.lambdaInterface.UpdateDocumentListener;
 import phpRecDB.helper.media.MediaPathParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
-import phpRecDB.helper.web.*;
+import phpRecDB.helper.web.Connector;
+import phpRecDB.helper.web.Credential;
 import phpRecDB.helper.web.transfer.AbstractRecord;
 import phpRecDB.helper.web.transfer.RecordDescription;
 import phpRecDB.helper.web.transfer.Screenshot;
@@ -18,8 +20,6 @@ import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -54,9 +54,7 @@ public class MainController {
         }
         SwingUtilities.invokeLater(this::initView);
 
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-            handleException(e);
-        });
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> handleException(e));
     }
 
     public static void handleException(Throwable e) {
@@ -65,7 +63,7 @@ public class MainController {
     }
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper (Version 1) www.phpRecDB.com");
+        JFrame frame = new JFrame("phpRecDB Helper (Version 2) www.phpRecDB.com");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -100,21 +98,8 @@ public class MainController {
 
         mainFrame.getSendToPhpRecDb().addActionListener(e -> sendToPhpRecDb());
         mainFrame.getBtnConnect().addActionListener(e -> connectToRecord());
-
         mainFrame.getTfPhpRecDbUrl().addActionListener(e -> connectToRecord());
-        mainFrame.getTfPhpRecDbUrl().getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                phpRecDbUrlChanged();
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                phpRecDbUrlChanged();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                phpRecDbUrlChanged();
-            }
-        });
+        mainFrame.getTfPhpRecDbUrl().getDocument().addDocumentListener((UpdateDocumentListener) () -> phpRecDbUrlChanged());
         mainFrame.getBtnPasteFromClipboard().addActionListener(e -> pasteUrlFromClipboard());
     }
 
@@ -169,16 +154,21 @@ public class MainController {
 
     private void snapshotAction() {
         List<MediaTitle> selectedMediaTitles = mediaTitleTableModel.getSelectedMediaTitles();
+        List<MediaTitle> menuTitles = mediaTitleTableModel.getMenuTitles();
+
         if (selectedMediaTitles.size() == 0) {
             JOptionPane.showMessageDialog(mainFrame.getPnlMain(), "No video titles selected.");
-            return;
-        }
-
-        SnapshotOptionDialog dialog = new SnapshotOptionDialog();
-        if (selectedMediaTitles.stream().filter(e -> !e.isMenu()).count() > 0) { //contains non-menu videotitles, show options
+        } else {
+            SnapshotOptionDialog dialog = new SnapshotOptionDialog();
+            if (menuTitles.size() > 0) {
+                dialog.setIncludeMenuControlsVisibility(true);
+            }
             int result = JOptionPane.showConfirmDialog(mainFrame.getPnlMain(), dialog.getPnlContent(),
                     "Snapshot Options", JOptionPane.OK_CANCEL_OPTION);
             if (result == JOptionPane.OK_OPTION) {
+                if (dialog.isIncludeMenu()) {
+                    selectedMediaTitles.addAll(menuTitles);
+                }
                 snapshotController.createSnapshots(selectedMediaTitles, dialog.getCount(), dialog.getDelay());
             }
         }

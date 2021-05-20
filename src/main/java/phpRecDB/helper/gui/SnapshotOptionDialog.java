@@ -12,17 +12,29 @@ public class SnapshotOptionDialog {
     private JPanel pnlContent;
     private JLabel lblHelpCount;
     private JLabel lblHelpDelay;
+    private JCheckBox cbIncludeMenu;
+    private JLabel lblIncludeMenu;
 
     public SnapshotOptionDialog() {
         tfDelay.setText("" + Constants.snapshotAfterSkipDelay);
         tfCount.setText("" + Constants.snapshotsPerTitleCount);
         ((PlainDocument) tfDelay.getDocument()).setDocumentFilter(new IntegerDocumentFilter());
         ((PlainDocument) tfCount.getDocument()).setDocumentFilter(new IntegerDocumentFilter());
+        setIncludeMenuControlsVisibility(false);
 
         lblHelpCount.addMouseListener(new InstantTooltipMouseAdapter());
         lblHelpDelay.addMouseListener(new InstantTooltipMouseAdapter());
         lblHelpCount.setToolTipText("<html>How many snapshots per video title?<br> Menus get snapshoted only once, despite what is written here.</html>");
         lblHelpDelay.setToolTipText("<html>Milliseconds to wait before snapshotting, after jumping to the next position.<br>If your snapshots are pixelated, increase this value, to let VLC some time<br>to adjust the image after jumping to the new position.</html>");
+    }
+
+    public void setIncludeMenuControlsVisibility(boolean isVisible) {
+        lblIncludeMenu.setVisible(isVisible);
+        cbIncludeMenu.setVisible(isVisible);
+    }
+
+    public boolean isIncludeMenu() {
+        return cbIncludeMenu.isSelected();
     }
 
     public JTextField getTfCount() {
@@ -68,8 +80,6 @@ public class SnapshotOptionDialog {
         final JLabel label1 = new JLabel();
         label1.setText("<html>\nSnapshots (per video title)\n</html>");
         pnlContent.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
-        pnlContent.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tfCount = new JTextField();
         tfCount.setText("");
         pnlContent.add(tfCount, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
@@ -90,6 +100,12 @@ public class SnapshotOptionDialog {
         if (lblHelpDelayFont != null) lblHelpDelay.setFont(lblHelpDelayFont);
         lblHelpDelay.setText("-?-");
         pnlContent.add(lblHelpDelay, new com.intellij.uiDesigner.core.GridConstraints(1, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        lblIncludeMenu = new JLabel();
+        lblIncludeMenu.setText("include Menu");
+        pnlContent.add(lblIncludeMenu, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        cbIncludeMenu = new JCheckBox();
+        cbIncludeMenu.setText("");
+        pnlContent.add(cbIncludeMenu, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -117,4 +133,5 @@ public class SnapshotOptionDialog {
     public JComponent $$$getRootComponent$$$() {
         return pnlContent;
     }
+
 }
