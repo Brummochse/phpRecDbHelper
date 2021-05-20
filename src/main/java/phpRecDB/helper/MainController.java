@@ -63,7 +63,7 @@ public class MainController {
     }
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper (Version 2) www.phpRecDB.com");
+        JFrame frame = new JFrame("phpRecDB Helper (Version 3) www.phpRecDB.com");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
