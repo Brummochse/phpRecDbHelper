@@ -23,6 +23,7 @@ public class BrInputHandler extends FileInputHandler {
 
     @Override
     public String getVlcInputString(String path) {
-        return "bluray:///" + path;
+        //see https://github.com/caprica/vlcj/issues/645
+        return new File(path).toURI().toASCIIString().replaceFirst("file:/", "bluray:///");
     }
 }

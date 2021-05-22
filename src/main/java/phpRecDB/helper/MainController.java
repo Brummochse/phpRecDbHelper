@@ -5,7 +5,7 @@ import phpRecDB.helper.gui.*;
 import phpRecDB.helper.lambdaInterface.MouseDraggedListener;
 import phpRecDB.helper.lambdaInterface.SingleListSelectionEvent;
 import phpRecDB.helper.lambdaInterface.UpdateDocumentListener;
-import phpRecDB.helper.media.MediaPathParser;
+import phpRecDB.helper.media.MediaParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
 import phpRecDB.helper.util.LogUtil;
@@ -72,6 +72,10 @@ public class MainController {
 
         VlcPlayer.getInstance().setVlcPanel(mainFrame.getPnlVlc());
         mainFrame.resetUi();
+
+        mainFrame.getTfPath().setText("E:\\Videos\\Bootlegs\\Amen\\Amen 2000-10-14 USA, Cincinnati,OH - Bogart's.mpg");
+//        mainFrame.getTfPath().setText("E:\\Videos\\Bootlegs\\Amen\\Amen 2001-02-21 Canada, Edmunton, AB - Le Rendeverous");
+//        mainFrame.getTfPath().setText("D:\\temp\\x [Heaven Shall Burn] 2017.03.30 Forum Karlín, Prague, Czech Republic");
 
 
         mediaTitleTableModel = new MediaTitleTableModel();
@@ -214,7 +218,7 @@ public class MainController {
         reset();
 
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
-        MediaPathParser parser = new MediaPathParser();
+        MediaParser parser = new MediaParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
         mediaTitleTableModel.setMediaTitles(titles);
         updateMediaTitlesSummary();
