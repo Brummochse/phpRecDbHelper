@@ -96,11 +96,14 @@ public class SnapshotController {
 
     private void removeSnapshot(int selectedIndex) {
         if (selectedIndex >= 0) {
-            SnapshotThumbnail snapshotThumbnail = snapshotThumbnailListModel.get(selectedIndex);
-            snapshotThumbnail.deleteSourceFile();
-            snapshotThumbnailListModel.remove(selectedIndex);
-            snapshotThumbnailList.revalidate();
-            snapshotThumbnailList.repaint();
+            SwingUtilities.invokeLater(() -> {
+                SnapshotThumbnail snapshotThumbnail = snapshotThumbnailListModel.get(selectedIndex);
+                snapshotThumbnail.deleteSourceFile();
+                snapshotThumbnailListModel.remove(selectedIndex);
+                snapshotThumbnailList.revalidate();
+                snapshotThumbnailList.repaint();
+            });
+
         }
     }
 
