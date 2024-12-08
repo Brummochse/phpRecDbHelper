@@ -8,6 +8,7 @@ import phpRecDB.helper.lambdaInterface.UpdateDocumentListener;
 import phpRecDB.helper.media.MediaParser;
 import phpRecDB.helper.media.SnapshotMaker;
 import phpRecDB.helper.media.data.MediaTitle;
+import phpRecDB.helper.util.FileDrop;
 import phpRecDB.helper.util.LogUtil;
 import phpRecDB.helper.util.MediaUtil;
 import phpRecDB.helper.util.TimeUtil;
@@ -25,6 +26,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -63,7 +65,7 @@ public class MainController {
     }
 
     private void initView() {
-        JFrame frame = new JFrame("phpRecDB Helper (Version 3) www.phpRecDB.com");
+        JFrame frame = new JFrame("phpRecDB Helper (Version 5) www.phpRecDB.com");
         frame.setContentPane(mainFrame.getPnlMain());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -73,10 +75,11 @@ public class MainController {
         VlcPlayer.getInstance().setVlcPanel(mainFrame.getPnlVlc());
         mainFrame.resetUi();
 
-        mainFrame.getTfPath().setText("E:\\Videos\\Bootlegs\\Amen\\Amen 2000-10-14 USA, Cincinnati,OH - Bogart's.mpg");
-//        mainFrame.getTfPath().setText("E:\\Videos\\Bootlegs\\Amen\\Amen 2001-02-21 Canada, Edmunton, AB - Le Rendeverous");
-//        mainFrame.getTfPath().setText("D:\\temp\\x [Heaven Shall Burn] 2017.03.30 Forum Karlín, Prague, Czech Republic");
 
+        new FileDrop(System.out, mainFrame.getPnlMain(), files -> {
+            String[] paths = Arrays.stream(files).map(File::getAbsolutePath).toArray(String[]::new);
+            openMedia(paths);
+        });
 
         mediaTitleTableModel = new MediaTitleTableModel();
         mainFrame.getTableMediaTitles().setModel(mediaTitleTableModel);
@@ -94,7 +97,7 @@ public class MainController {
         mainFrame.getTableMediaTitles().getSelectionModel().addListSelectionListener((SingleListSelectionEvent) (e) -> titlesSelectionChangedAction());
         mainFrame.getBtnChooseMedia().addActionListener(e -> openMediaChooserAction());
         mainFrame.getSliderTimeBar().addMouseMotionListener((MouseDraggedListener) (e) -> previewMediaPlayerController.timeBarPositionChanged());
-        mainFrame.getTfPath().addActionListener(e -> openMediaAction());
+        mainFrame.getTfPath().addActionListener(e -> openMediaFromPathInput());
 
         mainFrame.getBtnSnapshot().addActionListener(e -> snapshotAction());
 
@@ -214,10 +217,14 @@ public class MainController {
         }
     }
 
-    private void openMediaAction() {
+    private void openMediaFromPathInput() {
         reset();
 
         String[] paths = mainFrame.getTfPath().getText().split("\\|");
+        openMedia(paths);
+    }
+
+    private void openMedia(String[] paths) {
         MediaParser parser = new MediaParser();
         Vector<MediaTitle> titles = parser.getTitles(paths);
         mediaTitleTableModel.setMediaTitles(titles);
@@ -247,7 +254,7 @@ public class MainController {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             String paths = List.of(fc.getSelectedFiles()).stream().map(String::valueOf).reduce((a, b) -> a.concat("|").concat(b)).get();
             mainFrame.getTfPath().setText(paths);
-            openMediaAction();
+            openMediaFromPathInput();
         }
     }
 

@@ -36,11 +36,11 @@ public class MediaFileInputHandler extends FileInputHandler {
     @Override
     public String evaluateMediaType(MediaTitle mediaTitle) {
         SemioticSystem semioticSystem = mediaTitle.getMediaInfo().getSemioticSystem();
-        return switch (semioticSystem) {
-            case VIDEO -> "Video File";
-            case AUDIO -> "Audio File";
-            default -> "unknown";
-        };
+        switch (semioticSystem) {
+            case VIDEO : return "Video File";
+            case AUDIO : return "Audio File";
+            default : return "unknown";
+        }
     }
 
 }

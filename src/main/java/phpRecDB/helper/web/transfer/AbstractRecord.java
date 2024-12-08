@@ -19,11 +19,11 @@ public abstract class AbstractRecord {
     protected SemioticSystem semioticSystem;
 
     public static AbstractRecord createRecord(MediaTitleTableModel mediaTitleTableModel) {
-        return switch (mediaTitleTableModel.getSemioticSystem()) {
-            case VIDEO -> new RecordVideo(mediaTitleTableModel);
-            case AUDIO -> new RecordAudio(mediaTitleTableModel);
-            default -> null;
-        };
+        switch (mediaTitleTableModel.getSemioticSystem()) {
+            case VIDEO : return new RecordVideo(mediaTitleTableModel);
+            case AUDIO : return new RecordAudio(mediaTitleTableModel);
+            default : return null;
+        }
     }
 
     protected void initialiseBaseAttributes(MediaTitleTableModel mediaTitleTableModel) {

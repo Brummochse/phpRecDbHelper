@@ -9,6 +9,7 @@ import phpRecDB.helper.media.data.types.FileInputHandlers;
 import phpRecDB.helper.util.LogUtil;
 import uk.co.caprica.vlcj.media.AudioTrackInfo;
 import uk.co.caprica.vlcj.media.VideoTrackInfo;
+import uk.co.caprica.vlcj.player.base.TitleApi;
 import uk.co.caprica.vlcj.player.base.TitleDescription;
 
 import java.io.File;
@@ -29,8 +30,8 @@ public class MediaParser {
                 FileInputHandler fileInputType = FileInputHandlers.evaluateType(new File(path));
 
 
-                LogUtil.logger.info("start loading medium: "+ path);
-                List<TitleDescription> titleDescriptions = getTitleDescriptions(fileInputType,path);
+                LogUtil.logger.info("start loading medium: " + path);
+                List<TitleDescription> titleDescriptions = getTitleDescriptions(fileInputType, path);
 
                 if (titleDescriptions.size() == 0) { //medium without title separation -> only one media title
                     MediaTitle title = new MediaTitle();
@@ -79,7 +80,7 @@ public class MediaParser {
         MediaPlayerLoader<MediaInfo> mediaPlayerThread = new MediaPlayerLoader<>() {
 
             @Override
-            protected MediaInfo readMediaInfo() {
+            public MediaInfo readMediaInfo() {
                 MediaInfo mediaInfoReturnValue = new MediaInfo();
                 mediaInfoReturnValue.setVideoTrackInfos(mediaPlayer.media().info().videoTracks());
                 mediaInfoReturnValue.setAudioTrackInfos(mediaPlayer.media().info().audioTracks());
@@ -89,7 +90,7 @@ public class MediaParser {
             }
 
             @Override
-            protected boolean isMediaInfoReady() {
+            public boolean isMediaInfoReady() {
                 List<VideoTrackInfo> videoTrackInfos = mediaPlayer.media().info().videoTracks();
                 List<AudioTrackInfo> audioTrackInfos = mediaPlayer.media().info().audioTracks();
 
@@ -107,28 +108,39 @@ public class MediaParser {
 
         };
 
-        return mediaPlayerThread.execute(mediaTitle.getMedium().getVlcInputString(),mediaTitle.getTitleId());
+        return mediaPlayerThread.execute(mediaTitle.getMedium().getVlcInputString(), mediaTitle.getTitleId());
     }
 
     private List<TitleDescription> getTitleDescriptions(FileInputHandler fileInputHandler, String path) {
-        String vlcInputPath=fileInputHandler.getVlcInputString(path);
+        String vlcInputPath = fileInputHandler.getVlcInputString(path);
         MediaPlayerLoader<List<TitleDescription>> mediaPlayerThread = new MediaPlayerLoader<>() {
 
             @Override
-            protected List<TitleDescription> readMediaInfo() {
+            public List<TitleDescription> readMediaInfo() {
                 return mediaPlayer.titles().titleDescriptions();
             }
 
             @Override
-            protected boolean isMediaInfoReady() {
-                return mediaPlayer.titles().titleDescriptions().size() +
-                        mediaPlayer.media().info().videoTracks().size() +
-                        mediaPlayer.media().info().audioTracks().size() > 0;
+            public boolean isMediaInfoReady() {
+                System.out.println("hallo");
+                System.out.println(mediaPlayer);
+                TitleApi titles = mediaPlayer.titles();
+                System.out.println(titles);
+
+                System.out.println(mediaPlayer.titles().titleCount());
+                System.out.println(mediaPlayer.titles().titleDescriptions());
+                int size = mediaPlayer.titles().titleDescriptions().size();
+
+
+                int size1 = mediaPlayer.media().info().videoTracks().size();
+                int size2 = mediaPlayer.media().info().audioTracks().size();
+                System.out.println("out:"+(size + size1 + size2 ));
+                return size + size1 + size2 > 0;
             }
         };
 
         List<TitleDescription> titleDescriptions = mediaPlayerThread.execute(vlcInputPath);
-        fileInputHandler.postProcessReadTitles(titleDescriptions,path);
+        fileInputHandler.postProcessReadTitles(titleDescriptions, path);
 
         return titleDescriptions;
     }

@@ -2,7 +2,6 @@ package phpRecDB.helper.media;
 
 import phpRecDB.helper.MainController;
 import phpRecDB.helper.VlcPlayer;
-import phpRecDB.helper.util.LogUtil;
 import uk.co.caprica.vlcj.player.base.MediaPlayer;
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter;
 
@@ -36,7 +35,6 @@ public abstract class MediaPlayerLoader<ReturnType> extends MediaPlayerEventAdap
             e.printStackTrace();
         }
         VlcPlayer.getInstance().release();
-
         if (!success) {
             throw new RuntimeException("can't read from: " + vlcInputPath);
         }
@@ -52,29 +50,32 @@ public abstract class MediaPlayerLoader<ReturnType> extends MediaPlayerEventAdap
         }
     }
 
-    @Override
-    public void finished(MediaPlayer mediaPlayer) {
-        LogUtil.logger.info("catch vlc event: finished");
-        end(checkLoadingStatus());
-    }
+
 
     @Override
     public void error(MediaPlayer mediaPlayer) {
         MainController.handleException(new RuntimeException("VLC throw some error... unfortunately it doesn't tell which error :("));
     }
 
-    protected abstract ReturnType readMediaInfo();
+    public abstract ReturnType readMediaInfo();
 
-    abstract protected boolean isMediaInfoReady();
+    public abstract  boolean isMediaInfoReady();
 
-    protected boolean checkLoadingStatus() {
+    private boolean wasLoadingSuccessful() {
         if (isMediaInfoReady()) {
-            LogUtil.logger.info("catch vlc event: videoOutput");
+//            LogUtil.logger.info("media info ready");
+            System.out.println("isMediaInfoReady true");
             returnObject= readMediaInfo();
-            end(true);
             return true;
         }
+        System.out.println("isMediaInfoReady false");
         return false;
+    }
+
+    private void checkLoadingSuccessful() {
+        if (wasLoadingSuccessful()) {
+            end(true);
+        }
     }
 
     private void end(boolean success) {
@@ -83,22 +84,33 @@ public abstract class MediaPlayerLoader<ReturnType> extends MediaPlayerEventAdap
     }
 
     @Override
+    public void finished(MediaPlayer mediaPlayer) {
+//        LogUtil.logger.info("catch vlc event: finished");
+        System.out.println(mediaPlayer.titles().titleDescriptions());
+        end(wasLoadingSuccessful());
+    }
+
+    @Override
     public void timeChanged(MediaPlayer mediaPlayer, long newTime) {
-        checkLoadingStatus();
+//        LogUtil.logger.info("catch vlc event: timeChanged");
+        checkLoadingSuccessful();
     }
 
     @Override
     public void mediaPlayerReady(MediaPlayer mediaPlayer) {
-        checkLoadingStatus();
+//        LogUtil.logger.info("catch vlc event: mediaPlayerReady");
+        checkLoadingSuccessful();
     }
 
     @Override
     public void positionChanged(MediaPlayer mediaPlayer, float newPosition) {
-        checkLoadingStatus();
+//        LogUtil.logger.info("catch vlc event: positionChanged");
+        checkLoadingSuccessful();
     }
 
     @Override
     public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
-        checkLoadingStatus();
+//        LogUtil.logger.info("catch vlc event: videoOutput");
+        checkLoadingSuccessful();
     }
 }
